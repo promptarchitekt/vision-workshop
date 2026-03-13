@@ -1,0 +1,13 @@
+.vercel/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.idea/
+.vscode/
+
+# Local temp artifacts
+*.log
+*.tmp
+*.temp

@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision Workshop · Realize Your Vision</title>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   CSS VARIABLES & RESET
+═══════════════════════════════════════════════════════════════ */
+:root {
+  --bg:       #05080B;
+  --bg2:      #080E14;
+  --card:     #0A1018;
+  --border:   #1a2738;
+  --border2:  #0e1c2a;
+  --cyan:     #00FAFF;
+  --gold:     #FFC300;
+  --orange:   #ff6b35;
+  --green:    #4ade80;
+  --red:      #ff4444;
+  --muted:    #6B7A8D;
+  --muted2:   #8B949E;
+  --text:     #EDF2F7;
+  --text2:    #C5CDD8;
+  --sidebar:  240px;
+  --font-serif: 'Roboto', 'Segoe UI', -apple-system, Arial, sans-serif;
+  --font-sans: 'Roboto', 'Segoe UI', -apple-system, Arial, sans-serif;
+  --font-mono: 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+button { cursor: pointer; font-family: var(--font-sans); }
+textarea, input { font-family: var(--font-sans); }
+a { color: inherit; text-decoration: none; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SETUP SCREEN
+═══════════════════════════════════════════════════════════════ */
+#setup-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+#setup-screen::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,250,255,0.04) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  pointer-events: none;
+}
+#setup-screen::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(255,195,0,0.03) 0%, transparent 70%);
+  bottom: -100px; right: -100px;
+  pointer-events: none;
+}
+.setup-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px;
+  max-width: 520px;
+  width: 90%;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.5s ease;
+}
+.setup-eyebrow {
+  color: var(--gold);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.setup-title {
+  font-family: var(--font-serif);
+  font-size: 2.4rem;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.setup-title em {
+  color: var(--cyan);
+  font-style: italic;
+}
+.setup-sub {
+  color: var(--muted2);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+.setup-field {
+  margin-bottom: 20px;
+}
+.setup-field label {
+  display: block;
+  color: var(--muted2);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.setup-field input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.setup-field input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0,250,255,0.06);
+}
+.setup-field input::placeholder { color: var(--muted); }
+.btn-start {
+  width: 100%;
+  background: var(--cyan);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+.btn-start:hover {
+  background: #30fdff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0,250,255,0.2);
+}
+.setup-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.setup-stat {
+  text-align: center;
+}
+.setup-stat-val {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  color: var(--cyan);
+  font-weight: 500;
+}
+.setup-stat-lbl {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN APP LAYOUT
+═══════════════════════════════════════════════════════════════ */
+#app {
+  display: none;
+  min-height: 100vh;
+}
+#app.visible {
+  display: flex;
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────────── */
+#sidebar {
+  width: var(--sidebar);
+  min-height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-logo {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border2);
+}
+.sidebar-logo-eye {
+  color: var(--gold);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+.sidebar-logo-title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+/* Teilnehmer */
+.sidebar-user {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border2);
+}
+.sidebar-user-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-user-company {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Progress */
+.sidebar-progress {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border2);
+}
+.sidebar-progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.sidebar-progress-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar-progress-pct { font-size: 0.7rem; color: var(--green); font-family: var(--font-mono); font-weight: 500; }
+.progress-bar-track {
+  background: var(--border);
+  border-radius: 3px;
+  height: 4px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* Navigation */
+.sidebar-nav { flex: 1; padding: 8px 0; }
+.nav-section-label {
+  padding: 10px 16px 4px;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-weight: 500;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  font-size: 0.8rem;
+  color: var(--muted2);
+  user-select: none;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.active {
+  color: var(--text);
+  background: rgba(0,250,255,0.06);
+  border-left-color: var(--cyan);
+}
+.nav-item .nav-nr {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  min-width: 18px;
+}
+.nav-item.active .nav-nr { color: var(--cyan); }
+.nav-item .nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.nav-item .nav-dot.done { background: var(--green); }
+.nav-item .nav-dot.partial { background: var(--gold); }
+
+/* Sidebar bottom */
+.sidebar-bottom {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.save-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+.save-dot.saving { background: var(--gold); animation: pulse 1s infinite; }
+.btn-print {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 0.75rem;
+  transition: all 0.15s;
+  text-align: center;
+  width: 100%;
+}
+.btn-print:hover { border-color: var(--cyan); color: var(--cyan); }
+.btn-reset {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.68rem;
+  transition: all 0.15s;
+  text-align: center;
+  width: 100%;
+}
+.btn-reset:hover { border-color: var(--red); color: var(--red); }
+
+/* ── MAIN CONTENT ─────────────────────────────────────────────── */
+#main {
+  margin-left: var(--sidebar);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOP BAR ────────────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.topbar-breadcrumb .sep { opacity: 0.4; }
+.topbar-breadcrumb .current { color: var(--text2); font-weight: 500; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-nav {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+}
+.btn-nav:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+.btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-nav-next {
+  background: rgba(0,250,255,0.08);
+  border: 1px solid rgba(0,250,255,0.3);
+  color: var(--cyan);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+}
+.btn-nav-next:hover:not(:disabled) { background: rgba(0,250,255,0.14); }
+.btn-nav-next:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── CONTENT AREA ──────────────────────────────────────────────── */
+#content { flex: 1; padding: 40px 48px; max-width: 780px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD PAGE
+═══════════════════════════════════════════════════════════════ */
+.dashboard-header {
+  margin-bottom: 32px;
+}
+.dash-eyebrow {
+  color: var(--gold);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.dash-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.dash-sub { color: var(--muted2); font-size: 0.88rem; line-height: 1.6; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.kpi-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 1.6rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.kpi-sub { font-size: 0.72rem; color: var(--muted); }
+
+.block-cards { display: flex; flex-direction: column; gap: 12px; }
+.block-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.block-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+}
+.block-card[data-block="1"]::before { background: var(--cyan); }
+.block-card[data-block="2"]::before { background: var(--gold); }
+.block-card[data-block="3"]::before { background: var(--orange); }
+.block-card[data-block="4"]::before { background: var(--green); }
+.block-card[data-block="pitch"]::before { background: var(--gold); }
+.block-card:hover { border-color: var(--border); transform: translateX(2px); }
+.block-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.block-card-title { font-weight: 600; font-size: 0.95rem; }
+.block-card-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.block-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.block-prog-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.block-prog-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+.block-card[data-block="1"] .block-prog-fill { background: var(--cyan); }
+.block-card[data-block="2"] .block-prog-fill { background: var(--gold); }
+.block-card[data-block="3"] .block-prog-fill { background: var(--orange); }
+.block-card[data-block="4"] .block-prog-fill { background: var(--green); }
+.block-card[data-block="pitch"] .block-prog-fill { background: var(--gold); }
+.block-prog-pct { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); min-width: 32px; text-align: right; }
+.block-questions-preview {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.q-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.3s;
+}
+.q-dot.done { background: var(--green); }
+
+/* ═══════════════════════════════════════════════════════════════
+   QUESTION PAGE
+═══════════════════════════════════════════════════════════════ */
+.question-page { animation: fadeUp 0.3s ease; }
+
+.q-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.q-nr {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.q-block-badge {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+.q-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  line-height: 1.35;
+  color: var(--text);
+  margin-bottom: 8px;
+  max-width: 640px;
+}
+.q-hint {
+  font-size: 0.83rem;
+  color: var(--muted2);
+  line-height: 1.55;
+  margin-bottom: 28px;
+  max-width: 580px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid var(--border);
+  border-radius: 0 6px 6px 0;
+}
+.q-hint strong { color: var(--text2); }
+
+/* Textarea */
+.answer-section { margin-bottom: 28px; }
+.answer-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.answer-textarea {
+  width: 100%;
+  min-height: 220px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  color: var(--text);
+  font-size: 0.93rem;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.answer-textarea:focus {
+  border-color: rgba(0,250,255,0.4);
+  box-shadow: 0 0 0 3px rgba(0,250,255,0.05);
+}
+.answer-textarea::placeholder { color: var(--muted); }
+.answer-char {
+  text-align: right;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 6px;
+  font-family: var(--font-mono);
+}
+
+/* Insights Section */
+.insights-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+}
+.insights-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.insights-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 500;
+}
+.insights-add {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.insight-input {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--text);
+  font-size: 0.8rem;
+  outline: none;
+  min-width: 180px;
+  transition: border-color 0.2s;
+}
+.insight-input:focus { border-color: var(--cyan); }
+.insight-input::placeholder { color: var(--muted); font-size: 0.75rem; }
+.insight-type-select {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--text2);
+  font-size: 0.78rem;
+  outline: none;
+  cursor: pointer;
+}
+.btn-add-insight {
+  background: rgba(0,250,255,0.1);
+  border: 1px solid rgba(0,250,255,0.25);
+  color: var(--cyan);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+}
+.btn-add-insight:hover { background: rgba(0,250,255,0.16); }
+.insights-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; }
+.insight-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  cursor: default;
+  animation: popIn 0.2s ease;
+}
+.insight-tag .tag-remove {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.5;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+.insight-tag .tag-remove:hover { opacity: 1; }
+.insight-tag.muster    { background: rgba(0,250,255,0.08);  border: 1px solid rgba(0,250,255,0.2);  color: var(--cyan);   }
+.insight-tag.erkenntnis { background: rgba(255,195,0,0.08);  border: 1px solid rgba(255,195,0,0.2);  color: var(--gold);   }
+.insight-tag.differenzierung { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); color: var(--green);  }
+.insight-tag.kompetenz { background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.2); color: var(--orange); }
+.insight-tag.frage     { background: rgba(255,68,68,0.08);  border: 1px solid rgba(255,68,68,0.2);  color: var(--red);    }
+.insights-empty { color: var(--muted); font-size: 0.8rem; font-style: italic; padding: 4px 0; }
+
+/* Completion bar for question */
+.q-completion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  margin-bottom: 24px;
+}
+.q-completion-label { font-size: 0.78rem; color: var(--muted2); flex: 1; }
+.btn-mark-done {
+  background: rgba(74,222,128,0.1);
+  border: 1px solid rgba(74,222,128,0.25);
+  color: var(--green);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+}
+.btn-mark-done:hover { background: rgba(74,222,128,0.18); }
+.btn-mark-done.done { background: rgba(74,222,128,0.15); }
+
+/* ═══════════════════════════════════════════════════════════════
+   PITCH PAGE
+═══════════════════════════════════════════════════════════════ */
+.pitch-page { animation: fadeUp 0.3s ease; }
+.pitch-intro {
+  background: rgba(255,195,0,0.05);
+  border: 1px solid rgba(255,195,0,0.15);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 28px;
+}
+.pitch-intro-title { color: var(--gold); font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
+.pitch-intro-text { color: var(--muted2); font-size: 0.85rem; line-height: 1.6; }
+.pitch-section {
+  margin-bottom: 24px;
+}
+.pitch-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.pitch-section-nr {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.pitch-section-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.pitch-section-desc {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-left: 34px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.pitch-textarea {
+  width: 100%;
+  min-height: 100px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.pitch-textarea:focus { border-color: rgba(255,195,0,0.4); }
+.pitch-textarea::placeholder { color: var(--muted); font-size: 0.82rem; }
+
+/* Preview box */
+.pitch-preview {
+  background: var(--card);
+  border: 1px solid rgba(255,195,0,0.2);
+  border-radius: 14px;
+  padding: 24px;
+  margin-top: 32px;
+}
+.pitch-preview-title {
+  color: var(--gold);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.pitch-preview-content {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text2);
+  white-space: pre-wrap;
+  font-style: italic;
+}
+.pitch-preview-empty {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRINT STYLES
+═══════════════════════════════════════════════════════════════ */
+@media print {
+  #sidebar, .topbar, .btn-nav, .btn-nav-next, .insights-add,
+  .btn-mark-done, .btn-print, .btn-reset, .save-status { display: none !important; }
+  #app { display: block !important; }
+  #main { margin-left: 0 !important; }
+  #setup-screen { display: none !important; }
+  body { background: white; color: black; }
+  .answer-textarea { border: 1px solid #ccc; background: white; color: black; }
+  .q-title { color: black; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE (Mobile)
+═══════════════════════════════════════════════════════════════ */
+.hamburger {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+@media (max-width: 680px) {
+  :root { --sidebar: 0px; }
+  .hamburger { display: block; }
+  #sidebar {
+    transform: translateX(-260px);
+    width: 260px;
+  }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+  #main { margin-left: 0; }
+  #content { padding: 24px 20px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .q-title { font-size: 1.3rem; }
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.78rem;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  font-family: var(--font-sans);
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* Sidebar bottom: stack buttons */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SETUP SCREEN
+══════════════════════════════════════════════════════════════ -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <div class="setup-eyebrow">Realize Your Vision · Workbook</div>
+    <h1 class="setup-title">Dein persönliches<br><em>Vision Board</em></h1>
+    <p class="setup-sub">18 Fragen, ein Pitch, ein System. Deine Antworten werden lokal in diesem Browser gespeichert — nichts verlässt dein Gerät.</p>
+
+    <div class="setup-field">
+      <label>Dein Name</label>
+      <input type="text" id="setup-name" placeholder="z.B. Max Mustermann" autocomplete="off">
+    </div>
+    <div class="setup-field">
+      <label>Unternehmen / Projektname</label>
+      <input type="text" id="setup-company" placeholder="z.B. MyCo · oder leer lassen" autocomplete="off">
+    </div>
+
+    <button class="btn-start" onclick="startApp()">Workshop starten →</button>
+
+    <div class="setup-stats">
+      <div class="setup-stat">
+        <div class="setup-stat-val">18</div>
+        <div class="setup-stat-lbl">Fragen</div>
+      </div>
+      <div class="setup-stat">
+        <div class="setup-stat-val">4</div>
+        <div class="setup-stat-lbl">Blöcke</div>
+      </div>
+      <div class="setup-stat">
+        <div class="setup-stat-val">1</div>
+        <div class="setup-stat-lbl">Pitch</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-eye">Realize Your Vision</div>
+      <div class="sidebar-logo-title">Vision<br>Workshop</div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-name" id="sb-name">—</div>
+      <div class="sidebar-user-company" id="sb-company"></div>
+    </div>
+
+    <div class="sidebar-progress">
+      <div class="sidebar-progress-row">
+        <span class="sidebar-progress-label">Fortschritt</span>
+        <span class="sidebar-progress-pct" id="sb-pct">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="sb-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav" id="sidebar-nav">
+      <!-- Generated by JS -->
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="save-status">
+        <div class="save-dot" id="save-dot"></div>
+        <span id="save-label">Gespeichert</span>
+      </div>
+      <button class="btn-print" onclick="exportData()">💾 Antworten exportieren</button>
+      <button class="btn-print" onclick="window.print()">🖨 Drucken / PDF</button>
+      <button class="btn-reset" onclick="resetData()">Daten zurücksetzen</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main id="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-breadcrumb">
+          <span id="tb-block">Überblick</span>
+          <span class="sep">›</span>
+          <span class="current" id="tb-current">Dashboard</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-nav" id="btn-prev" onclick="navigate(-1)" disabled>← Zurück</button>
+        <button class="btn-nav-next" id="btn-next" onclick="navigate(1)">Weiter →</button>
+      </div>
+    </div>
+
+    <div id="content">
+      <!-- Rendered by JS -->
+    </div>
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  DATA DEFINITIONS
+// ═══════════════════════════════════════════════════════════════
+const BLOCKS = [
+  { id: 1, name: "Fundament",      color: "#00FAFF", nrs: [1,2,3,4,5,6]    },
+  { id: 2, name: "Markt & Kunde",  color: "#FFC300", nrs: [7,8,9,10,11,12] },
+  { id: 3, name: "Umsetzung",      color: "#ff6b35", nrs: [13,14,15,16]    },
+  { id: 4, name: "Zahlen & Ziele", color: "#4ade80", nrs: [17,18]          },
+];
+
+const QUESTIONS = [
+  {
+    nr: 1, block: 1,
+    title: "Begeisterung & Überzeugung",
+    question: "Wann warst Du das letzte Mal richtig begeistert und überzeugt von Deiner Idee / Vision?",
+    hint: "Beschreibe einen konkreten Moment. Was hast du gespürt? Wie hat dein Umfeld reagiert? Was hat sich verändert?",
+    placeholder: "Schreibe frei — kein richtiges oder falsches Erlebnis. Lass die Erinnerung sprechen...",
+  },
+  {
+    nr: 2, block: 1,
+    title: "Vision",
+    question: "Was ist die Vision Deines Unternehmens?",
+    hint: "<strong>1–3 Sätze.</strong> Vision = der gewünschte Zustand der Welt, wenn deine Arbeit wirkt. Nicht was du tust — was dadurch besser wird.",
+    placeholder: "Meine Vision ist es, ...",
+  },
+  {
+    nr: 3, block: 1,
+    title: "Mission",
+    question: "Was ist Deine Mission?",
+    hint: "<strong>1–3 Sätze.</strong> Mission = was du jeden Tag konkret tust, um die Vision zu erreichen. Die Mission ist operativ, die Vision ist aspirativ.",
+    placeholder: "Meine Mission ist es, ...",
+  },
+  {
+    nr: 4, block: 1,
+    title: "Werte",
+    question: "Was sind Deine Werte?",
+    hint: "3–5 Werte, die dein Handeln leiten. Was ist dir nicht verhandelbar? Woran erkennst du eine gute Entscheidung?",
+    placeholder: "1. ...\n2. ...\n3. ...",
+  },
+  {
+    nr: 5, block: 1,
+    title: "Dein Warum (Why)",
+    question: "Was ist Dein Warum?",
+    hint: "Simon Sinek: <strong>«People don't buy what you do — they buy why you do it.»</strong> Warum existiert dein Unternehmen wirklich? Was treibt dich an?",
+    placeholder: "Ich tue das, weil...",
+  },
+  {
+    nr: 6, block: 1,
+    title: "Einzigartigkeit (USP)",
+    question: "Was macht Dich einzigartig?",
+    hint: "Dein Unique Value Proposition. Was kannst du besser, anders oder für wen besser als andere? Kein Selbstlob — ein klarer Unterschied.",
+    placeholder: "Was mich einzigartig macht ist...",
+  },
+  {
+    nr: 7, block: 2,
+    title: "Idealkunde (Persona)",
+    question: "Wer ist Dein idealer Kunde?",
+    hint: "Beschreibe eine konkrete Person oder Organisation: Rolle, Branche, Größe, Herausforderung, Entscheidungskontext. Je konkreter, desto besser.",
+    placeholder: "Mein idealer Kunde ist...",
+  },
+  {
+    nr: 8, block: 2,
+    title: "Problem & Schmerz",
+    question: "Was ist das größte Problem / der größte Schmerz Deiner Zielgruppe?",
+    hint: "Welches Problem kostet deine Kunden Geld, Zeit, Nerven oder Schlaf? Beschreibe es so, dass sie sich sofort erkennen.",
+    placeholder: "Das größte Problem meiner Zielgruppe ist...",
+  },
+  {
+    nr: 9, block: 2,
+    title: "Deine Lösung",
+    question: "Welche Lösung bietest Du an?",
+    hint: "Konkret, nicht generisch. Was passiert vom ersten Kontakt bis zum Ergebnis? Was verändert sich für den Kunden?",
+    placeholder: "Meine Lösung ist...",
+  },
+  {
+    nr: 10, block: 2,
+    title: "Marktgröße",
+    question: "Wie groß ist Dein Markt?",
+    hint: "<strong>TAM</strong> (Gesamtmarkt) · <strong>SAM</strong> (adressierbarer Markt) · <strong>SOM</strong> (realistisch erreichbar). Schätzungen sind ok — zeig dass du nachgedacht hast.",
+    placeholder: "TAM: ...\nSAM: ...\nSOM: ...",
+  },
+  {
+    nr: 11, block: 2,
+    title: "Wettbewerb",
+    question: "Wer sind Deine Mitbewerber und wie unterscheidest Du Dich?",
+    hint: "Direkte Konkurrenten, indirekte Alternativen (inkl. «nichts tun»). Was können sie nicht, was du kannst?",
+    placeholder: "Direkte Mitbewerber: ...\nWas mich unterscheidet: ...",
+  },
+  {
+    nr: 12, block: 2,
+    title: "Geschäftsmodell",
+    question: "Was ist Dein Geschäftsmodell?",
+    hint: "Wie verdienst du Geld? Einmalig oder wiederkehrend? Pro Stunde, Projekt, Abo, Lizenz? Was skaliert?",
+    placeholder: "Ich verdiene Geld durch...",
+  },
+  {
+    nr: 13, block: 3,
+    title: "Konkretes Angebot",
+    question: "Was ist Dein Angebot konkret?",
+    hint: "Welche Pakete, Leistungen oder Produkte gibt es? Mit Preisrahmen wenn möglich. Was kauft jemand bei dir?",
+    placeholder: "Mein Angebot:\n\nPaket A: ...\nPaket B: ...",
+  },
+  {
+    nr: 14, block: 3,
+    title: "Vertrieb & Marketing",
+    question: "Wie sieht Dein Vertrieb und Marketing aus?",
+    hint: "Wie finden Kunden dich — oder du sie? Welche Kanäle, welche Methoden? Was funktioniert bereits?",
+    placeholder: "Meine Kunden finde ich durch...",
+  },
+  {
+    nr: 15, block: 3,
+    title: "Ressourcen",
+    question: "Welche Ressourcen benötigst Du?",
+    hint: "Menschen, Werkzeuge, Zeit, Kapital, Know-how, Netzwerk. Was hast du bereits? Was fehlt noch?",
+    placeholder: "Vorhanden: ...\nBenötigt: ...",
+  },
+  {
+    nr: 16, block: 3,
+    title: "Roadmap & nächste Schritte",
+    question: "Was sind Deine nächsten konkreten Schritte?",
+    hint: "Die nächsten 30 / 90 / 180 Tage. Keine Träume — konkrete Aktionen mit Deadline wenn möglich.",
+    placeholder: "Nächste 30 Tage: ...\nNächste 90 Tage: ...\nNächste 180 Tage: ...",
+  },
+  {
+    nr: 17, block: 4,
+    title: "12-Monats-Ziele",
+    question: "Was sind Deine Ziele für die nächsten 12 Monate?",
+    hint: "SMART: spezifisch, messbar, attraktiv, realistisch, terminiert. Was willst du erreicht haben?",
+    placeholder: "Umsatz: ...\nKunden: ...\nProjekte: ...\nPersönlich: ...",
+  },
+  {
+    nr: 18, block: 4,
+    title: "Erfolgsfaktoren",
+    question: "Was brauchst Du, um erfolgreich zu sein?",
+    hint: "Welche Voraussetzungen müssen erfüllt sein? Was sind die kritischen Faktoren, die über Erfolg oder Misserfolg entscheiden?",
+    placeholder: "Ich brauche...",
+  },
+];
+
+const PITCH_SECTIONS = [
+  { key: "elevator",    label: "Elevator Pitch",   color: "#00FAFF", nr: "01", desc: "30-Sekunden-Version: Wer bist du, was machst du, für wen, und warum?", placeholder: "Ich helfe [Zielgruppe] dabei, [Problem] zu lösen, indem ich [Lösung]. Das Ergebnis: [konkreter Nutzen]." },
+  { key: "problem",     label: "Das Problem",       color: "#FFC300", nr: "02", desc: "Welches konkrete, spürbare Problem löst du?", placeholder: "Das Problem meiner Zielgruppe ist..." },
+  { key: "loesung",     label: "Die Lösung",        color: "#4ade80", nr: "03", desc: "Dein Ansatz in 2–3 Sätzen. Was passiert, wenn jemand mit dir arbeitet?", placeholder: "Meine Lösung ist..." },
+  { key: "zielgruppe",  label: "Zielgruppe",        color: "#FFC300", nr: "04", desc: "Für wen genau? Wer hat den größten Nutzen?", placeholder: "Meine Zielgruppe sind..." },
+  { key: "unterschied", label: "Differenzierung",   color: "#ff6b35", nr: "05", desc: "Warum du und nicht jemand anderes? Was ist dein Vorteil?", placeholder: "Was mich unterscheidet ist..." },
+  { key: "cta",         label: "Call to Action",    color: "#4ade80", nr: "06", desc: "Was soll die Person als nächstes tun?", placeholder: "Der nächste Schritt ist..." },
+];
+
+const INSIGHT_TYPES = [
+  { value: "muster",          label: "Muster" },
+  { value: "erkenntnis",      label: "Erkenntnis" },
+  { value: "differenzierung", label: "Differenzierung" },
+  { value: "kompetenz",       label: "Kompetenz" },
+  { value: "frage",           label: "Offene Frage" },
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE & STORAGE
+// ═══════════════════════════════════════════════════════════════
+const STORAGE_KEY_BASE = 'vision_workshop_v1';
+
+function getStorageKey() {
+  const slug = (state.user.name || 'anon')
+    .toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 24);
+  return `${STORAGE_KEY_BASE}_${slug}`;
+}
+
+let state = {
+  user: { name: '', company: '' },
+  answers: {},
+  insights: {},
+  done: {},
+  pitch: {},
+  currentPage: 'dashboard',
+  lastSaved: null,
+};
+let saveTimeout = null;
+
+function loadState() {
+  try {
+    // Try to find any existing session (for returning users before name is set)
+    let raw = null;
+    // Scan localStorage for matching keys
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(STORAGE_KEY_BASE + '_')) {
+        raw = localStorage.getItem(k);
+        break;
+      }
+    }
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = { ...state, ...parsed };
+    }
+    // Migrate prefills into state so they persist and can be deleted
+    QUESTIONS.forEach(q => {
+      if (q.prefill && state.answers[`q_${q.nr}`] === undefined) {
+        state.answers[`q_${q.nr}`] = q.prefill;
+      }
+      if (q.prefillInsights && !state.insights[`q_${q.nr}`]) {
+        state.insights[`q_${q.nr}`] = q.prefillInsights.map(i => ({ ...i }));
+      }
+    });
+  } catch(e) { console.warn('State load failed:', e); }
+}
+
+function saveState() {
+  const dot = document.getElementById('save-dot');
+  const lbl = document.getElementById('save-label');
+  if (dot) { dot.classList.add('saving'); lbl.textContent = 'Speichert...'; }
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    try {
+      state.lastSaved = new Date().toISOString();
+      localStorage.setItem(getStorageKey(), JSON.stringify(state));
+    } catch(e) {
+      showToast('⚠ Speichern fehlgeschlagen — Browser-Speicher voll?', '#ff6b35');
+      return;
+    }
+    if (dot) { dot.classList.remove('saving'); lbl.textContent = 'Gespeichert'; }
+    showToast('✓ Gespeichert', '#4ade80');
+  }, 800);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SETUP
+// ═══════════════════════════════════════════════════════════════
+function startApp() {
+  const name = document.getElementById('setup-name').value.trim() || 'Teilnehmer';
+  const company = document.getElementById('setup-company').value.trim();
+  state.user = { name, company };
+  // Migrate prefills now that we have the user name
+  QUESTIONS.forEach(q => {
+    if (q.prefill && state.answers[`q_${q.nr}`] === undefined) {
+      state.answers[`q_${q.nr}`] = q.prefill;
+    }
+    if (q.prefillInsights && !state.insights[`q_${q.nr}`]) {
+      state.insights[`q_${q.nr}`] = q.prefillInsights.map(i => ({ ...i }));
+    }
+  });
+  saveState();
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  initApp();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT APP
+// ═══════════════════════════════════════════════════════════════
+function initApp() {
+  document.getElementById('sb-name').textContent = state.user.name;
+  document.getElementById('sb-company').textContent = state.user.company || '';
+  buildSidebar();
+  updateProgress();
+  navigateTo('dashboard');
+}
+
+function buildSidebar() {
+  const nav = document.getElementById('sidebar-nav');
+  let html = `
+    <div class="nav-section-label">Navigation</div>
+    <div class="nav-item ${state.currentPage==='dashboard'?'active':''}" onclick="navigateTo('dashboard')">
+      <span class="nav-nr">◎</span> Dashboard
+    </div>`;
+
+  BLOCKS.forEach(b => {
+    html += `<div class="nav-section-label" style="color:${b.color}99;">${b.name}</div>`;
+    b.nrs.forEach(nr => {
+      const q = QUESTIONS.find(q => q.nr === nr);
+      const isDone = !!state.done[`q_${nr}`];
+      const hasText = !!(state.answers[`q_${nr}`] || q.prefill);
+      const isActive = state.currentPage === `q_${nr}`;
+      html += `<div class="nav-item ${isActive?'active':''}" onclick="navigateTo('q_${nr}')">
+        <span class="nav-nr" style="${isActive?`color:${b.color}`:''}">` + String(nr).padStart(2,'0') + `</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${q.title}</span>
+        <div class="nav-dot ${isDone?'done':hasText?'partial':''}"></div>
+      </div>`;
+    });
+  });
+
+  html += `<div class="nav-section-label">Pitch</div>
+    <div class="nav-item ${state.currentPage==='pitch'?'active':''}" onclick="navigateTo('pitch')">
+      <span class="nav-nr">🎯</span> Pitch Builder
+      <div class="nav-dot ${hasPitchContent()?'partial':''}"></div>
+    </div>`;
+
+  nav.innerHTML = html;
+}
+
+function hasPitchContent() {
+  return PITCH_SECTIONS.some(s => state.pitch[s.key]);
+}
+
+function updateProgress() {
+  const total = QUESTIONS.length;
+  const done = QUESTIONS.filter(q => state.done[`q_${q.nr}`]).length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('sb-pct').textContent = pct + '%';
+  document.getElementById('sb-bar').style.width = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+const PAGE_ORDER = ['dashboard', ...QUESTIONS.map(q => `q_${q.nr}`), 'pitch'];
+
+function navigateTo(page) {
+  state.currentPage = page;
+  buildSidebar();
+  updateTopbar(page);
+  renderContent(page);
+
+  const idx = PAGE_ORDER.indexOf(page);
+  document.getElementById('btn-prev').disabled = idx <= 0;
+  document.getElementById('btn-next').disabled = idx >= PAGE_ORDER.length - 1;
+  document.getElementById('content').scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function navigate(dir) {
+  const idx = PAGE_ORDER.indexOf(state.currentPage);
+  const next = PAGE_ORDER[idx + dir];
+  if (next) navigateTo(next);
+}
+
+function updateTopbar(page) {
+  const tb = document.getElementById('tb-block');
+  const tc = document.getElementById('tb-current');
+  if (page === 'dashboard') {
+    tb.textContent = 'Workshop'; tc.textContent = 'Dashboard';
+  } else if (page === 'pitch') {
+    tb.textContent = 'Pitch'; tc.textContent = 'Pitch Builder';
+  } else {
+    const nr = parseInt(page.replace('q_',''));
+    const q = QUESTIONS.find(q => q.nr === nr);
+    const b = BLOCKS.find(b => b.id === q.block);
+    tb.textContent = b.name; tc.textContent = `Frage ${nr} · ${q.title}`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDER CONTENT
+// ═══════════════════════════════════════════════════════════════
+function renderContent(page) {
+  const el = document.getElementById('content');
+  if (page === 'dashboard') {
+    el.innerHTML = renderDashboard();
+  } else if (page === 'pitch') {
+    el.innerHTML = renderPitch();
+    bindPitchListeners();
+  } else {
+    const nr = parseInt(page.replace('q_',''));
+    const q = QUESTIONS.find(q => q.nr === nr);
+    el.innerHTML = renderQuestion(q);
+    bindQuestionListeners(q);
+  }
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function renderDashboard() {
+  const total = QUESTIONS.length;
+  const done = QUESTIONS.filter(q => state.done[`q_${q.nr}`]).length;
+  const pct = Math.round((done / total) * 100);
+  const answered = QUESTIONS.filter(q => state.answers[`q_${q.nr}`] || q.prefill).length;
+
+  let blockCards = BLOCKS.map(b => {
+    const bqs = QUESTIONS.filter(q => b.nrs.includes(q.nr));
+    const bdone = bqs.filter(q => state.done[`q_${q.nr}`]).length;
+    const dots = bqs.map(q => `<div class="q-dot ${state.done['q_'+q.nr]?'done':''}"></div>`).join('');
+    return `<div class="block-card" data-block="${b.id}" onclick="navigateTo('q_${b.nrs[0]}')" style="cursor:pointer;">
+      <div class="block-card-header">
+        <div class="block-card-title" style="color:${b.color}">${b.name}</div>
+        <div class="block-card-count" style="color:${b.color}">${bdone}/${bqs.length} fertig</div>
+      </div>
+      <div class="block-progress-row">
+        <div class="block-prog-bar"><div class="block-prog-fill" style="width:${Math.round((bdone/bqs.length)*100)}%;background:${b.color}"></div></div>
+        <div class="block-prog-pct">${Math.round((bdone/bqs.length)*100)}%</div>
+      </div>
+      <div class="block-questions-preview">${dots}</div>
+    </div>`;
+  }).join('');
+
+  const pitchDone = PITCH_SECTIONS.filter(s => state.pitch[s.key]).length;
+
+  return `<div class="dashboard-header">
+    <div class="dash-eyebrow">Realize Your Vision · Workbook</div>
+    <h1 class="dash-title">Willkommen, ${escHtml(state.user.name)}</h1>
+    <p class="dash-sub">Arbeite dich durch alle 18 Fragen und bau deinen Pitch auf. Deine Antworten werden automatisch gespeichert.</p>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Beantwortet</div>
+      <div class="kpi-value" style="color:#4ade80">${done}</div>
+      <div class="kpi-sub">von ${total} Fragen</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Fortschritt</div>
+      <div class="kpi-value" style="color:#00FAFF">${pct}%</div>
+      <div class="kpi-sub">abgeschlossen</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Pitch-Elemente</div>
+      <div class="kpi-value" style="color:#FFC300">${pitchDone}/6</div>
+      <div class="kpi-sub">befüllt</div>
+    </div>
+  </div>
+
+  <div class="block-cards">
+    ${blockCards}
+    <div class="block-card" data-block="pitch" onclick="navigateTo('pitch')" style="cursor:pointer;">
+      <div class="block-card-header">
+        <div class="block-card-title" style="color:#FFC300">🎯 Pitch Builder</div>
+        <div class="block-card-count" style="color:#FFC300">${pitchDone}/6 Elemente</div>
+      </div>
+      <div class="block-progress-row">
+        <div class="block-prog-bar"><div class="block-prog-fill" style="width:${Math.round((pitchDone/6)*100)}%;background:#FFC300"></div></div>
+        <div class="block-prog-pct">${Math.round((pitchDone/6)*100)}%</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── QUESTION ──────────────────────────────────────────────────
+function renderQuestion(q) {
+  const b = BLOCKS.find(b => b.id === q.block);
+  const answer = state.answers[`q_${q.nr}`] ?? '';
+  const insights = state.insights[`q_${q.nr}`] || [];
+  const isDone = !!state.done[`q_${q.nr}`];
+
+  const insightTags = insights.length > 0
+    ? insights.map((ins, i) =>
+        `<span class="insight-tag ${ins.type}">
+          ${escHtml(ins.text)}
+          <button class="tag-remove" onclick="removeInsight(${q.nr},${i})" title="Entfernen">✕</button>
+        </span>`).join('')
+    : `<span class="insights-empty">Noch keine Insights — füge Schlüsselaussagen hinzu</span>`;
+
+  const typeOptions = INSIGHT_TYPES.map(t =>
+    `<option value="${t.value}">${t.label}</option>`).join('');
+
+  return `<div class="question-page">
+    <div class="q-meta">
+      <span class="q-nr" style="background:${b.color}18;border:1px solid ${b.color}44;color:${b.color}">
+        Frage ${String(q.nr).padStart(2,'0')}
+      </span>
+      <span class="q-block-badge" style="background:${b.color}10;border:1px solid ${b.color}33;color:${b.color}">
+        ${b.name}
+      </span>
+      ${isDone ? `<span style="font-size:0.72rem;color:#4ade80;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);padding:3px 10px;border-radius:20px;">✓ Abgeschlossen</span>` : ''}
+    </div>
+
+    <h2 class="q-title">${escHtml(q.question)}</h2>
+
+    ${q.hint ? `<div class="q-hint">${q.hint}</div>` : ''}
+
+    <div class="answer-section">
+      <div class="answer-label">Deine Antwort</div>
+      <textarea
+        class="answer-textarea"
+        id="answer-${q.nr}"
+        placeholder="${q.placeholder || 'Schreibe deine Antwort...'}"
+        oninput="onAnswerChange(${q.nr},this.value)"
+      >${escHtml(answer)}</textarea>
+      <div class="answer-char" id="char-${q.nr}">${answer.length} Zeichen</div>
+    </div>
+
+    <div class="insights-section">
+      <div class="insights-header">
+        <div class="insights-title">Kernaussagen &amp; Insights</div>
+      </div>
+      <div class="insights-add">
+        <input type="text" class="insight-input" id="insight-input-${q.nr}"
+          placeholder="Schlüsselaussage eintragen..."
+          onkeydown="if(event.key==='Enter')addInsight(${q.nr})"
+        >
+        <select class="insight-type-select" id="insight-type-${q.nr}">${typeOptions}</select>
+        <button class="btn-add-insight" onclick="addInsight(${q.nr})">+ Hinzufügen</button>
+      </div>
+      <div class="insights-list" id="insights-list-${q.nr}" style="margin-top:10px;">
+        ${insightTags}
+      </div>
+      <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">
+        Typen: <span style="color:#00FAFF">● Muster</span>
+        <span style="color:#FFC300;margin-left:6px">● Erkenntnis</span>
+        <span style="color:#4ade80;margin-left:6px">● Differenzierung</span>
+        <span style="color:#ff6b35;margin-left:6px">● Kompetenz</span>
+        <span style="color:#ff4444;margin-left:6px">● Offene Frage</span>
+      </div>
+    </div>
+
+    <div class="q-completion">
+      <span class="q-completion-label">
+        ${isDone ? '✓ Diese Frage ist abgeschlossen. Du kannst sie jederzeit weiter bearbeiten.' : 'Wenn du mit deiner Antwort zufrieden bist, markiere sie als abgeschlossen.'}
+      </span>
+      <button class="btn-mark-done ${isDone?'done':''}" onclick="toggleDone(${q.nr})">
+        ${isDone ? '✓ Abgeschlossen' : 'Als fertig markieren'}
+      </button>
+    </div>
+  </div>`;
+}
+
+function bindQuestionListeners(q) {
+  // Char counter already bound via oninput
+}
+
+function onAnswerChange(nr, val) {
+  state.answers[`q_${nr}`] = val;
+  const cc = document.getElementById(`char-${nr}`);
+  if (cc) cc.textContent = val.length + ' Zeichen';
+  saveState();
+  updateProgress();
+  buildSidebar();
+}
+
+function addInsight(nr) {
+  const inp = document.getElementById(`insight-input-${nr}`);
+  const sel = document.getElementById(`insight-type-${nr}`);
+  const text = inp.value.trim();
+  if (!text) return;
+
+  if (!state.insights[`q_${nr}`]) state.insights[`q_${nr}`] = [];
+  state.insights[`q_${nr}`].push({ text, type: sel.value });
+  inp.value = '';
+  saveState();
+  refreshInsights(nr);
+}
+
+function removeInsight(nr, idx) {
+  if (!state.insights[`q_${nr}`]) state.insights[`q_${nr}`] = [];
+  state.insights[`q_${nr}`].splice(idx, 1);
+  saveState();
+  refreshInsights(nr);
+}
+
+function refreshInsights(nr) {
+  const container = document.getElementById(`insights-list-${nr}`);
+  if (!container) return;
+  const insights = state.insights[`q_${nr}`] || [];
+  if (insights.length === 0) {
+    container.innerHTML = '<span class="insights-empty">Noch keine Insights — füge Schlüsselaussagen hinzu</span>';
+  } else {
+    container.innerHTML = insights.map((ins, i) =>
+      `<span class="insight-tag ${ins.type}">
+        ${escHtml(ins.text)}
+        <button class="tag-remove" onclick="removeInsight(${nr},${i})" title="Entfernen">✕</button>
+      </span>`).join('');
+  }
+}
+
+function toggleDone(nr) {
+  state.done[`q_${nr}`] = !state.done[`q_${nr}`];
+  saveState();
+  updateProgress();
+  navigateTo(`q_${nr}`); // re-render
+}
+
+// ── PITCH ─────────────────────────────────────────────────────
+function renderPitch() {
+  const sections = PITCH_SECTIONS.map(s => {
+    const val = state.pitch[s.key] || '';
+    return `<div class="pitch-section">
+      <div class="pitch-section-header">
+        <div class="pitch-section-nr" style="background:${s.color}18;border:1px solid ${s.color}44;color:${s.color}">${s.nr}</div>
+        <div class="pitch-section-title" style="color:${s.color}">${s.label}</div>
+      </div>
+      <div class="pitch-section-desc">${s.desc}</div>
+      <textarea class="pitch-textarea" data-key="${s.key}"
+        placeholder="${s.placeholder}"
+        oninput="onPitchChange('${s.key}',this.value)"
+        style="border-color:${val?s.color+'33':'var(--border)'}"
+      >${escHtml(val)}</textarea>
+    </div>`;
+  }).join('');
+
+  const previewContent = buildPitchPreview();
+
+  return `<div class="pitch-page">
+    <div class="dash-eyebrow">Zusammenfassung</div>
+    <h1 class="dash-title" style="margin-bottom:6px;">Pitch Builder</h1>
+    <p class="dash-sub" style="margin-bottom:28px;">Verdichte deine Vision auf den Punkt. Fülle die 6 Elemente aus — sie ergeben zusammen deinen vollständigen Pitch.</p>
+
+    <div class="pitch-intro">
+      <div class="pitch-intro-title">💡 Tipp</div>
+      <div class="pitch-intro-text">Nutze deine Antworten aus den 18 Fragen als Rohstoff. Kürze, verdichte, schärfe — bis jeder Satz sitzt. Ein guter Pitch erklärt in 60 Sekunden, wer du bist, was du löst und warum du.</div>
+    </div>
+
+    ${sections}
+
+    <div class="pitch-preview">
+      <div class="pitch-preview-title">Pitch-Vorschau (zusammengesetzt)</div>
+      ${previewContent
+        ? `<div class="pitch-preview-content">${escHtml(previewContent)}</div>`
+        : `<div class="pitch-preview-empty">Fülle die Felder oben aus — die Vorschau erscheint automatisch.</div>`}
+    </div>
+  </div>`;
+}
+
+function bindPitchListeners() {}
+
+function onPitchChange(key, val) {
+  state.pitch[key] = val;
+  saveState();
+  // Update preview
+  const prev = document.querySelector('.pitch-preview-content, .pitch-preview-empty');
+  if (prev) {
+    const content = buildPitchPreview();
+    if (content) {
+      prev.className = 'pitch-preview-content';
+      prev.textContent = content;
+    } else {
+      prev.className = 'pitch-preview-empty';
+      prev.textContent = 'Fülle die Felder oben aus — die Vorschau erscheint automatisch.';
+    }
+  }
+  buildSidebar();
+}
+
+function buildPitchPreview() {
+  const parts = [];
+  if (state.pitch.elevator) parts.push(state.pitch.elevator);
+  if (state.pitch.problem)   parts.push('\nDas Problem: ' + state.pitch.problem);
+  if (state.pitch.loesung)   parts.push('\nDie Lösung: ' + state.pitch.loesung);
+  if (state.pitch.zielgruppe) parts.push('\nZielgruppe: ' + state.pitch.zielgruppe);
+  if (state.pitch.unterschied) parts.push('\nWas mich unterscheidet: ' + state.pitch.unterschied);
+  if (state.pitch.cta)       parts.push('\nNächster Schritt: ' + state.pitch.cta);
+  return parts.join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════════════
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function showToast(msg, color = '#4ade80') {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.style.borderColor = color;
+  t.style.color = color;
+  t.style.border = `1px solid ${color}`;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function exportData() {
+  const data = {
+    exportedAt: new Date().toISOString(),
+    user: state.user,
+    answers: state.answers,
+    insights: state.insights,
+    done: state.done,
+    pitch: state.pitch,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const safeName = (state.user.name || 'export').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  a.download = `vision-workshop-${safeName}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('💾 Export gestartet', '#00FAFF');
+}
+
+function resetData() {
+  const confirmed = prompt(
+    `Alle Daten unwiderruflich löschen?\n\nGib deinen Namen zur Bestätigung ein: "${state.user.name}"`
+  );
+  if (!confirmed || confirmed.trim().toLowerCase() !== state.user.name.trim().toLowerCase()) {
+    showToast('Abgebrochen — Name stimmt nicht überein.', '#ff6b35');
+    return;
+  }
+  localStorage.removeItem(getStorageKey());
+  showToast('Daten gelöscht — Seite lädt neu...', '#ff4444');
+  setTimeout(() => location.reload(), 1500);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT ON LOAD
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  if (state.user.name) {
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    initApp();
+    // Return to last page if set
+    if (state.currentPage && state.currentPage !== 'dashboard') {
+      setTimeout(() => navigateTo(state.currentPage), 50);
+    }
+  } else {
+    // Show return banner if a previous session exists in localStorage
+    const hasSession = [...Array(localStorage.length)].some((_,i) =>
+      (localStorage.key(i) || '').startsWith(STORAGE_KEY_BASE + '_'));
+    if (hasSession) {
+      const card = document.querySelector('.setup-card');
+      card.insertAdjacentHTML('beforeend', `
+        <div style="margin-top:16px;padding:12px 16px;background:rgba(0,250,255,0.05);
+          border:1px solid rgba(0,250,255,0.15);border-radius:8px;font-size:0.82rem;
+          color:var(--muted2);line-height:1.5;">
+          ↩ Es gibt eine gespeicherte Sitzung in diesem Browser.<br>
+          Gib denselben Namen ein — deine Antworten werden automatisch geladen.
+        </div>`);
+    }
+  }
+});
+
+// Enter key on setup
+document.addEventListener('keydown', e => {
+  const setup = document.getElementById('setup-screen');
+  if (e.key === 'Enter' && setup && setup.style.display !== 'none') {
+    startApp();
+  }
+});
+</script>
+</body>
+</html>
