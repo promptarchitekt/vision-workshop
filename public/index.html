@@ -850,10 +850,30 @@ a { color: inherit; text-decoration: none; }
   .btn-mark-done, .btn-print, .btn-reset, .save-status { display: none !important; }
   #app { display: block !important; }
   #main { margin-left: 0 !important; padding: 0 !important; }
+  #content { width: 100% !important; max-width: none !important; padding: 0 !important; }
   #setup-screen { display: none !important; }
-  body { background: white; color: black; }
-  .answer-textarea { border: 1px solid #ccc; background: white; color: black; }
-  .q-title { color: black; }
+  body, #app, #main { background: white !important; color: black !important; }
+  .dashboard-header, .dash-title, .q-title, .pitch-section-title, .pitch-preview-content { color: black !important; }
+  .dash-sub, .q-hint, .pitch-intro-text, .pitch-section-desc, .kpi-sub,
+  .kpi-label, .block-prog-pct, .block-card-count, .answer-char, .insights-empty,
+  .q-completion-label, .pitch-preview-empty { color: #4b5563 !important; }
+  .kpi-card, .block-card, .insights-section, .q-completion, .pitch-intro, .pitch-preview,
+  .answer-textarea, .pitch-textarea, .insight-input, .insight-type-select {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+  }
+  .q-hint {
+    background: #f8fafc !important;
+    border-left: 2px solid #cbd5e1 !important;
+    border-top: 1px solid #e5e7eb !important;
+    border-right: 1px solid #e5e7eb !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+  .block-prog-bar, .progress-bar-track { background: #e5e7eb !important; }
+  .q-dot { background: #cbd5e1 !important; }
+  .insight-tag { background: white !important; }
   * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 
