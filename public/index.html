@@ -1219,11 +1219,83 @@ const INSIGHT_TYPES = [
 //  STATE & STORAGE
 // ═══════════════════════════════════════════════════════════════
 const STORAGE_KEY_BASE = 'vision_workshop_v1';
+const ACTIVE_SESSION_KEY = 'vision_workshop_active_key';
+
+function getSlugForName(name) {
+  return (name || 'anon')
+    .toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 24);
+}
+
+function getStorageKeyForName(name) {
+  return `${STORAGE_KEY_BASE}_${getSlugForName(name)}`;
+}
 
 function getStorageKey() {
-  const slug = (state.user.name || 'anon')
-    .toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 24);
-  return `${STORAGE_KEY_BASE}_${slug}`;
+  return getStorageKeyForName(state.user.name);
+}
+
+function listStoredSessions() {
+  const sessions = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith(STORAGE_KEY_BASE + '_')) continue;
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || 'null');
+      if (!parsed || !parsed.user || !parsed.user.name) continue;
+      sessions.push({
+        key,
+        name: parsed.user.name,
+        company: parsed.user.company || '',
+        lastSaved: parsed.lastSaved || null,
+      });
+    } catch (e) {
+      console.warn('Stored session scan failed:', e);
+    }
+  }
+  sessions.sort((a, b) => (b.lastSaved || '').localeCompare(a.lastSaved || ''));
+  return sessions;
+}
+
+function loadStateForName(name) {
+  try {
+    const raw = localStorage.getItem(getStorageKeyForName(name));
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    state = { ...state, ...parsed };
+    return true;
+  } catch(e) {
+    console.warn('State load failed:', e);
+    return false;
+  }
+}
+
+function persistState(options = {}) {
+  const { showFeedback = false, updateTimestamp = false } = options;
+  if (!state.user.name) return;
+  const dot = document.getElementById('save-dot');
+  const lbl = document.getElementById('save-label');
+
+  try {
+    const payload = { ...state };
+    if (updateTimestamp) {
+      payload.lastSaved = new Date().toISOString();
+      state.lastSaved = payload.lastSaved;
+    }
+    const storageKey = getStorageKey();
+    localStorage.setItem(storageKey, JSON.stringify(payload));
+    sessionStorage.setItem(ACTIVE_SESSION_KEY, storageKey);
+  } catch(e) {
+    if (showFeedback) {
+      showToast('⚠ Speichern fehlgeschlagen — Browser-Speicher voll?', '#ff6b35');
+    }
+    return;
+  }
+
+  if (showFeedback) {
+    if (dot) { dot.classList.remove('saving'); }
+    if (lbl) { lbl.textContent = 'Gespeichert'; }
+    showToast('✓ Gespeichert', '#4ade80');
+  }
 }
 
 let state = {
@@ -1238,31 +1310,14 @@ let state = {
 let saveTimeout = null;
 
 function loadState() {
-  try {
-    // Try to find any existing session (for returning users before name is set)
-    let raw = null;
-    // Scan localStorage for matching keys
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith(STORAGE_KEY_BASE + '_')) {
-        raw = localStorage.getItem(k);
-        break;
-      }
+  QUESTIONS.forEach(q => {
+    if (q.prefill && state.answers[`q_${q.nr}`] === undefined) {
+      state.answers[`q_${q.nr}`] = q.prefill;
     }
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      state = { ...state, ...parsed };
+    if (q.prefillInsights && !state.insights[`q_${q.nr}`]) {
+      state.insights[`q_${q.nr}`] = q.prefillInsights.map(i => ({ ...i }));
     }
-    // Migrate prefills into state so they persist and can be deleted
-    QUESTIONS.forEach(q => {
-      if (q.prefill && state.answers[`q_${q.nr}`] === undefined) {
-        state.answers[`q_${q.nr}`] = q.prefill;
-      }
-      if (q.prefillInsights && !state.insights[`q_${q.nr}`]) {
-        state.insights[`q_${q.nr}`] = q.prefillInsights.map(i => ({ ...i }));
-      }
-    });
-  } catch(e) { console.warn('State load failed:', e); }
+  });
 }
 
 function saveState() {
@@ -1271,15 +1326,7 @@ function saveState() {
   if (dot) { dot.classList.add('saving'); lbl.textContent = 'Speichert...'; }
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
-    try {
-      state.lastSaved = new Date().toISOString();
-      localStorage.setItem(getStorageKey(), JSON.stringify(state));
-    } catch(e) {
-      showToast('⚠ Speichern fehlgeschlagen — Browser-Speicher voll?', '#ff6b35');
-      return;
-    }
-    if (dot) { dot.classList.remove('saving'); lbl.textContent = 'Gespeichert'; }
-    showToast('✓ Gespeichert', '#4ade80');
+    persistState({ showFeedback: true, updateTimestamp: true });
   }, 800);
 }
 
@@ -1289,16 +1336,18 @@ function saveState() {
 function startApp() {
   const name = document.getElementById('setup-name').value.trim() || 'Teilnehmer';
   const company = document.getElementById('setup-company').value.trim();
+  state = {
+    user: { name: '', company: '' },
+    answers: {},
+    insights: {},
+    done: {},
+    pitch: {},
+    currentPage: 'dashboard',
+    lastSaved: null,
+  };
+  loadStateForName(name);
   state.user = { name, company };
-  // Migrate prefills now that we have the user name
-  QUESTIONS.forEach(q => {
-    if (q.prefill && state.answers[`q_${q.nr}`] === undefined) {
-      state.answers[`q_${q.nr}`] = q.prefill;
-    }
-    if (q.prefillInsights && !state.insights[`q_${q.nr}`]) {
-      state.insights[`q_${q.nr}`] = q.prefillInsights.map(i => ({ ...i }));
-    }
-  });
+  loadState();
   saveState();
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
@@ -1313,7 +1362,7 @@ function initApp() {
   document.getElementById('sb-company').textContent = state.user.company || '';
   buildSidebar();
   updateProgress();
-  navigateTo('dashboard');
+  navigateTo(state.currentPage || 'dashboard');
 }
 
 function buildSidebar() {
@@ -1367,6 +1416,7 @@ const PAGE_ORDER = ['dashboard', ...QUESTIONS.map(q => `q_${q.nr}`), 'pitch'];
 
 function navigateTo(page) {
   state.currentPage = page;
+  persistState();
   buildSidebar();
   updateTopbar(page);
   renderContent(page);
@@ -1720,11 +1770,12 @@ function exportData() {
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  const objectUrl = URL.createObjectURL(blob);
+  a.href = objectUrl;
   const safeName = (state.user.name || 'export').replace(/[^a-z0-9]/gi, '-').toLowerCase();
   a.download = `vision-workshop-${safeName}.json`;
   a.click();
-  URL.revokeObjectURL(a.href);
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
   showToast('💾 Export gestartet', '#00FAFF');
 }
 
@@ -1737,6 +1788,7 @@ function resetData() {
     return;
   }
   localStorage.removeItem(getStorageKey());
+  sessionStorage.removeItem(ACTIVE_SESSION_KEY);
   showToast('Daten gelöscht — Seite lädt neu...', '#ff4444');
   setTimeout(() => location.reload(), 1500);
 }
@@ -1750,28 +1802,37 @@ function toggleSidebar() {
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
   loadState();
+  const activeKey = sessionStorage.getItem(ACTIVE_SESSION_KEY);
+  if (activeKey) {
+    try {
+      const raw = localStorage.getItem(activeKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        state = { ...state, ...parsed };
+        loadState();
+      }
+    } catch (e) {
+      console.warn('Active session restore failed:', e);
+    }
+  }
   if (state.user.name) {
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
     initApp();
-    // Return to last page if set
-    if (state.currentPage && state.currentPage !== 'dashboard') {
-      setTimeout(() => navigateTo(state.currentPage), 50);
-    }
-  } else {
-    // Show return banner if a previous session exists in localStorage
-    const hasSession = [...Array(localStorage.length)].some((_,i) =>
-      (localStorage.key(i) || '').startsWith(STORAGE_KEY_BASE + '_'));
-    if (hasSession) {
-      const card = document.querySelector('.setup-card');
-      card.insertAdjacentHTML('beforeend', `
-        <div style="margin-top:16px;padding:12px 16px;background:rgba(0,250,255,0.05);
-          border:1px solid rgba(0,250,255,0.15);border-radius:8px;font-size:0.82rem;
-          color:var(--muted2);line-height:1.5;">
-          ↩ Es gibt eine gespeicherte Sitzung in diesem Browser.<br>
-          Gib denselben Namen ein — deine Antworten werden automatisch geladen.
-        </div>`);
-    }
+    return;
+  }
+  const sessions = listStoredSessions();
+  if (sessions.length > 0) {
+    const preview = sessions.slice(0, 3).map(s => escHtml(s.name)).join(', ');
+    const more = sessions.length > 3 ? ` +${sessions.length - 3} weitere` : '';
+    const card = document.querySelector('.setup-card');
+    card.insertAdjacentHTML('beforeend', `
+      <div style="margin-top:16px;padding:12px 16px;background:rgba(0,250,255,0.05);
+        border:1px solid rgba(0,250,255,0.15);border-radius:8px;font-size:0.82rem;
+        color:var(--muted2);line-height:1.5;">
+        ↩ Gespeicherte Sitzungen in diesem Browser: ${preview}${more}.<br>
+        Gib denselben Namen ein, um deine Antworten gezielt wieder zu laden.
+      </div>`);
   }
 });
 
