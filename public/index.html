@@ -27,6 +27,9 @@
   --muted2:   #8B949E;
   --text:     #EDF2F7;
   --text2:    #C5CDD8;
+  --topbar-bg: rgba(8,14,20,0.88);
+  --topbar-border: rgba(255,255,255,0.06);
+  --topbar-shadow: 0 18px 50px rgba(0,0,0,0.22);
   --sidebar:  240px;
   --font-serif: 'Roboto', 'Segoe UI', -apple-system, Arial, sans-serif;
   --font-sans: 'Roboto', 'Segoe UI', -apple-system, Arial, sans-serif;
@@ -44,9 +47,43 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
+body[data-theme="light"] {
+  --bg: #f3f7fb;
+  --bg2: #ffffff;
+  --card: #ffffff;
+  --border: #d8e1eb;
+  --border2: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #475569;
+  --text: #0f172a;
+  --text2: #1e293b;
+  --topbar-bg: rgba(255,255,255,0.9);
+  --topbar-border: rgba(15,23,42,0.08);
+  --topbar-shadow: 0 18px 40px rgba(15,23,42,0.08);
+  background-image:
+    radial-gradient(circle at top right, rgba(0,186,196,0.10), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(255,195,0,0.10), transparent 28%);
+}
 button { cursor: pointer; font-family: var(--font-sans); }
 textarea, input { font-family: var(--font-sans); }
 a { color: inherit; text-decoration: none; }
+body[data-theme="light"] .setup-card,
+body[data-theme="light"] .kpi-card,
+body[data-theme="light"] .block-card,
+body[data-theme="light"] .insights-section,
+body[data-theme="light"] .pitch-preview,
+body[data-theme="light"] .answer-textarea,
+body[data-theme="light"] .pitch-textarea,
+body[data-theme="light"] .pitch-intro,
+body[data-theme="light"] .q-completion {
+  box-shadow: 0 14px 30px rgba(15,23,42,0.05);
+}
+body[data-theme="light"] .q-hint {
+  background: rgba(15,23,42,0.03);
+  border-left-color: rgba(15,23,42,0.12);
+}
+body[data-theme="light"] .nav-item:hover { background: rgba(15,23,42,0.04); }
+body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 
 /* ═══════════════════════════════════════════════════════════════
    SETUP SCREEN
@@ -385,14 +422,34 @@ a { color: inherit; text-decoration: none; }
   width: min(100%, 1280px);
   margin: 0 auto;
   padding: 18px 28px;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--topbar-border);
   border-radius: 22px;
-  background: rgba(8,14,20,0.88);
-  box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+  background: var(--topbar-bg);
+  box-shadow: var(--topbar-shadow);
   backdrop-filter: blur(18px);
   position: sticky;
   top: 24px;
   z-index: 50;
+}
+.theme-toggle {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 140;
+  border: 1px solid var(--border);
+  background: var(--topbar-bg);
+  color: var(--text2);
+  box-shadow: var(--topbar-shadow);
+  backdrop-filter: blur(18px);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 0.78rem;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+.theme-toggle:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
 }
 .topbar-breadcrumb {
   display: flex;
@@ -923,6 +980,11 @@ a { color: inherit; text-decoration: none; }
     padding: 14px 16px;
     border-radius: 16px;
   }
+  .theme-toggle {
+    top: 12px;
+    right: 12px;
+    padding: 8px 12px;
+  }
   #content { padding: 22px 6px 0; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
   .q-title { font-size: 1.3rem; }
@@ -955,6 +1017,7 @@ a { color: inherit; text-decoration: none; }
 <body>
 
 <div id="toast"></div>
+<button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">☀ Hell</button>
 
 <!-- ══════════════════════════════════════════════════════════════
      SETUP SCREEN
@@ -1206,6 +1269,7 @@ const PITCH_SECTIONS = [
   { key: "unterschied", label: "Differenzierung",   color: "#ff6b35", nr: "05", desc: "Warum du und nicht jemand anderes? Was ist dein Vorteil?", placeholder: "Was mich unterscheidet ist..." },
   { key: "cta",         label: "Call to Action",    color: "#4ade80", nr: "06", desc: "Was soll die Person als nächstes tun?", placeholder: "Der nächste Schritt ist..." },
 ];
+const THEME_STORAGE_KEY = 'vision_workshop_theme';
 
 const INSIGHT_TYPES = [
   { value: "muster",          label: "Muster" },
@@ -1759,6 +1823,24 @@ function showToast(msg, color = '#4ade80') {
   t._hide = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+function applyTheme(theme) {
+  const nextTheme = theme === 'light' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', nextTheme);
+  localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  updateThemeToggle(nextTheme);
+}
+
+function updateThemeToggle(theme) {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.textContent = theme === 'light' ? '☾ Dunkel' : '☀ Hell';
+}
+
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme') || 'dark';
+  applyTheme(current === 'light' ? 'dark' : 'light');
+}
+
 function exportData() {
   const data = {
     exportedAt: new Date().toISOString(),
@@ -1801,6 +1883,7 @@ function toggleSidebar() {
 //  INIT ON LOAD
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
+  applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || 'dark');
   loadState();
   const activeKey = sessionStorage.getItem(ACTIVE_SESSION_KEY);
   if (activeKey) {
