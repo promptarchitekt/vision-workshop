@@ -322,6 +322,37 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   color: var(--muted);
   font-weight: 500;
 }
+.nav-section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px 6px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.nav-section-toggle:hover {
+  color: var(--text2);
+}
+.nav-section-title {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+.nav-section-chevron {
+  font-size: 0.72rem;
+  color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.nav-section-toggle.is-open .nav-section-chevron {
+  transform: rotate(90deg);
+  color: var(--text2);
+}
 .nav-item {
   display: flex;
   align-items: center;
@@ -442,14 +473,44 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   box-shadow: var(--topbar-shadow);
   backdrop-filter: blur(18px);
   border-radius: 999px;
-  padding: 9px 14px;
-  font-size: 0.78rem;
+  padding: 12px 18px;
+  font-size: 0.9rem;
   line-height: 1;
   transition: all 0.15s ease;
 }
 .theme-toggle:hover {
   border-color: var(--cyan);
   color: var(--cyan);
+}
+.floating-tools {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 140;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+.theme-toggle,
+.global-timer-toggle {
+  position: static;
+}
+.global-timer-toggle {
+  border: 1px solid var(--border);
+  background: var(--topbar-bg);
+  color: var(--text2);
+  box-shadow: var(--topbar-shadow);
+  backdrop-filter: blur(18px);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+.global-timer-toggle:hover {
+  border-color: var(--gold);
+  color: var(--gold);
 }
 .topbar-breadcrumb {
   display: flex;
@@ -898,13 +959,211 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   font-size: 0.85rem;
   font-style: italic;
 }
+.pitch-timer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,10,16,0.74);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  z-index: 999;
+}
+.pitch-timer-modal {
+  width: min(560px, 100%);
+  min-height: 620px;
+  background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(10,15,25,0.98));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.36);
+  padding: 24px;
+}
+.pitch-timer-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.pitch-timer-kicker {
+  color: var(--gold);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 8px;
+}
+.pitch-timer-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.pitch-timer-copy {
+  color: var(--muted2);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.pitch-timer-close {
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  color: var(--muted2);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.pitch-timer-close:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.18);
+}
+.pitch-timer-mode-group,
+.pitch-timer-preset-group,
+.pitch-timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pitch-timer-section {
+  margin-top: 18px;
+}
+.pitch-timer-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+}
+.pitch-timer-chip {
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  color: var(--text2);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.pitch-timer-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.18);
+}
+.pitch-timer-chip.active {
+  background: rgba(255,195,0,0.14);
+  border-color: rgba(255,195,0,0.32);
+  color: var(--gold);
+}
+.pitch-timer-custom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+.pitch-timer-duration-slot {
+  min-height: 54px;
+}
+.pitch-timer-custom.is-disabled {
+  opacity: 0.42;
+}
+.pitch-timer-input {
+  width: 120px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 0.88rem;
+  outline: none;
+}
+.pitch-timer-input:focus {
+  border-color: rgba(255,195,0,0.38);
+}
+.pitch-timer-hint {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.pitch-timer-display {
+  margin-top: 22px;
+  border: 1px solid rgba(255,195,0,0.16);
+  border-radius: 20px;
+  background: radial-gradient(circle at top, rgba(255,195,0,0.12), rgba(255,255,255,0.02) 58%);
+  padding: 26px 22px;
+  text-align: center;
+}
+.pitch-timer-display.is-ended {
+  border-color: rgba(255,68,68,0.36);
+  background: radial-gradient(circle at top, rgba(255,68,68,0.16), rgba(255,255,255,0.02) 58%);
+}
+.pitch-timer-status {
+  font-size: 0.78rem;
+  color: var(--muted2);
+  margin-bottom: 10px;
+}
+.pitch-timer-status.is-ended {
+  color: #ff9f9f;
+}
+.pitch-timer-time {
+  font-size: clamp(2.4rem, 9vw, 4.4rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+.pitch-timer-display.is-ended .pitch-timer-time {
+  color: #ffd7d7;
+}
+.pitch-timer-meta {
+  margin-top: 12px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.pitch-timer-control {
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pitch-timer-control.primary {
+  background: rgba(0,250,255,0.12);
+  border-color: rgba(0,250,255,0.28);
+  color: var(--cyan);
+}
+.pitch-timer-control.warn {
+  background: rgba(255,195,0,0.12);
+  border-color: rgba(255,195,0,0.28);
+  color: var(--gold);
+}
+.pitch-timer-control:hover {
+  border-color: rgba(255,255,255,0.18);
+}
+@media (max-width: 720px) {
+  .pitch-timer-modal { padding: 18px; border-radius: 18px; min-height: auto; }
+  .pitch-timer-header { flex-direction: column; }
+  .pitch-timer-close { align-self: flex-end; }
+  .pitch-timer-mode-group,
+  .pitch-timer-preset-group,
+  .pitch-timer-controls { flex-direction: column; }
+  .pitch-timer-chip,
+  .pitch-timer-control,
+  .pitch-timer-input { width: 100%; }
+  .pitch-timer-custom { align-items: stretch; }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    PRINT STYLES
 ═══════════════════════════════════════════════════════════════ */
 @media print {
   #sidebar, .topbar, .btn-nav, .btn-nav-next, .insights-add,
-  .btn-mark-done, .btn-print, .btn-reset, .save-status { display: none !important; }
+  .btn-mark-done, .btn-print, .btn-reset, .save-status, .floating-tools, .pitch-timer-overlay { display: none !important; }
   #app { display: block !important; }
   #main { margin-left: 0 !important; padding: 0 !important; }
   #content { width: 100% !important; max-width: none !important; padding: 0 !important; }
@@ -980,9 +1239,13 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
     padding: 14px 16px;
     border-radius: 16px;
   }
-  .theme-toggle {
+  .floating-tools {
     top: 12px;
     right: 12px;
+    gap: 8px;
+  }
+  .theme-toggle,
+  .global-timer-toggle {
     padding: 8px 12px;
   }
   #content { padding: 22px 6px 0; }
@@ -1017,7 +1280,11 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 <body>
 
 <div id="toast"></div>
-<button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">☀ Hell</button>
+<div id="pitch-timer-root"></div>
+<div class="floating-tools">
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">☀ Hell</button>
+  <button class="global-timer-toggle" type="button" onclick="openPitchTimer()">⏱ Uhr</button>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════
      SETUP SCREEN
@@ -1269,6 +1536,7 @@ const PITCH_SECTIONS = [
   { key: "unterschied", label: "Differenzierung",   color: "#ff6b35", nr: "05", desc: "Warum du und nicht jemand anderes? Was ist dein Vorteil?", placeholder: "Was mich unterscheidet ist..." },
   { key: "cta",         label: "Call to Action",    color: "#4ade80", nr: "06", desc: "Was soll die Person als nächstes tun?", placeholder: "Der nächste Schritt ist..." },
 ];
+const SIDEBAR_SECTION_DEFAULTS = Object.fromEntries(BLOCKS.map((b) => [String(b.id), true]));
 const THEME_STORAGE_KEY = 'vision_workshop_theme';
 
 const INSIGHT_TYPES = [
@@ -1372,6 +1640,216 @@ let state = {
   lastSaved: null,
 };
 let saveTimeout = null;
+let sidebarSections = { ...SIDEBAR_SECTION_DEFAULTS };
+const TIMER_PRESETS = [
+  { key: '30', label: '30 Sek', seconds: 30 },
+  { key: '60', label: '1 Min', seconds: 60 },
+  { key: '120', label: '2 Min', seconds: 120 },
+];
+let pitchTimer = createDefaultPitchTimerState();
+
+function createDefaultPitchTimerState() {
+  return {
+    isOpen: false,
+    mode: 'countdown',
+    presetKey: '60',
+    customSeconds: 90,
+    displaySeconds: 60,
+    running: false,
+    ended: false,
+    intervalId: null,
+  };
+}
+
+function getTimerBaseSeconds() {
+  if (pitchTimer.mode !== 'countdown') return 0;
+  if (pitchTimer.presetKey === 'custom') {
+    return Math.max(1, Number(pitchTimer.customSeconds) || 0);
+  }
+  const preset = TIMER_PRESETS.find((item) => item.key === pitchTimer.presetKey);
+  return preset ? preset.seconds : 60;
+}
+
+function formatTimerDisplay(totalSeconds) {
+  const safe = Math.max(0, Math.floor(totalSeconds || 0));
+  const minutes = Math.floor(safe / 60);
+  const seconds = safe % 60;
+  return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+}
+
+function getTimerStatusLabel() {
+  if (pitchTimer.ended) return 'Zeit abgelaufen';
+  if (pitchTimer.running) {
+    return pitchTimer.mode === 'countdown' ? 'Countdown läuft' : 'Stoppuhr läuft';
+  }
+  return pitchTimer.mode === 'countdown' ? 'Bereit für deinen Countdown' : 'Bereit für deine Stoppuhr';
+}
+
+function getTimerMetaLabel() {
+  if (pitchTimer.mode === 'stopwatch') return 'Freies Pitch-Training ohne Zielzeit';
+  const base = getTimerBaseSeconds();
+  if (pitchTimer.presetKey === 'custom') {
+    return 'Individuelle Dauer: ' + formatTimerDisplay(base);
+  }
+  const preset = TIMER_PRESETS.find((item) => item.key === pitchTimer.presetKey);
+  return preset ? 'Preset: ' + preset.label : 'Preset aktiv';
+}
+
+function stopPitchTimerInterval() {
+  if (pitchTimer.intervalId) {
+    clearInterval(pitchTimer.intervalId);
+    pitchTimer.intervalId = null;
+  }
+}
+
+function syncPitchTimerDisplay() {
+  const root = document.getElementById('pitch-timer-root');
+  if (!root) return;
+  root.innerHTML = renderPitchTimerOverlay();
+}
+
+function setPitchTimerMode(mode) {
+  const nextMode = mode === 'stopwatch' ? 'stopwatch' : 'countdown';
+  stopPitchTimerInterval();
+  pitchTimer.mode = nextMode;
+  pitchTimer.running = false;
+  pitchTimer.ended = false;
+  pitchTimer.displaySeconds = nextMode === 'countdown' ? getTimerBaseSeconds() : 0;
+  syncPitchTimerDisplay();
+}
+
+function setPitchTimerPreset(presetKey) {
+  if (pitchTimer.mode !== 'countdown') return;
+  pitchTimer.presetKey = presetKey;
+  stopPitchTimerInterval();
+  pitchTimer.running = false;
+  pitchTimer.ended = false;
+  pitchTimer.displaySeconds = getTimerBaseSeconds();
+  syncPitchTimerDisplay();
+}
+
+function onPitchTimerCustomInput(value) {
+  const parsed = Math.max(1, Math.min(3599, Number(value) || 0));
+  pitchTimer.customSeconds = parsed || 90;
+  if (pitchTimer.mode === 'countdown' && pitchTimer.presetKey === 'custom' && !pitchTimer.running) {
+    pitchTimer.displaySeconds = getTimerBaseSeconds();
+    pitchTimer.ended = false;
+    syncPitchTimerDisplay();
+  }
+}
+
+function openPitchTimer() {
+  pitchTimer.isOpen = true;
+  syncPitchTimerDisplay();
+}
+
+function closePitchTimer() {
+  pitchTimer.isOpen = false;
+  syncPitchTimerDisplay();
+}
+
+function resetPitchTimer() {
+  stopPitchTimerInterval();
+  pitchTimer.running = false;
+  pitchTimer.ended = false;
+  pitchTimer.displaySeconds = pitchTimer.mode === 'countdown' ? getTimerBaseSeconds() : 0;
+  syncPitchTimerDisplay();
+}
+
+function startPitchTimer() {
+  if (pitchTimer.running) return;
+  if (pitchTimer.mode === 'countdown' && pitchTimer.displaySeconds <= 0) {
+    pitchTimer.displaySeconds = getTimerBaseSeconds();
+  }
+  pitchTimer.ended = false;
+  pitchTimer.running = true;
+  stopPitchTimerInterval();
+  pitchTimer.intervalId = setInterval(() => {
+    if (pitchTimer.mode === 'countdown') {
+      if (pitchTimer.displaySeconds <= 1) {
+        pitchTimer.displaySeconds = 0;
+        pitchTimer.running = false;
+        pitchTimer.ended = true;
+        stopPitchTimerInterval();
+      } else {
+        pitchTimer.displaySeconds -= 1;
+      }
+    } else {
+      pitchTimer.displaySeconds += 1;
+    }
+    syncPitchTimerDisplay();
+  }, 1000);
+  syncPitchTimerDisplay();
+}
+
+function pausePitchTimer() {
+  stopPitchTimerInterval();
+  pitchTimer.running = false;
+  syncPitchTimerDisplay();
+}
+
+function renderPitchTimerOverlay() {
+  if (!pitchTimer.isOpen) return '';
+  const modeCountdownActive = pitchTimer.mode === 'countdown' ? ' active' : '';
+  const modeStopwatchActive = pitchTimer.mode === 'stopwatch' ? ' active' : '';
+  const presetButtons = TIMER_PRESETS.map((preset) => {
+    const activeClass = pitchTimer.mode === 'countdown' && pitchTimer.presetKey === preset.key ? ' active' : '';
+    return `<button type="button" class="pitch-timer-chip${activeClass}" onclick="setPitchTimerPreset('${preset.key}')">${preset.label}</button>`;
+  }).join('');
+  const customActive = pitchTimer.mode === 'countdown' && pitchTimer.presetKey === 'custom' ? ' active' : '';
+  const displayClass = pitchTimer.ended ? 'pitch-timer-display is-ended' : 'pitch-timer-display';
+  const statusClass = pitchTimer.ended ? 'pitch-timer-status is-ended' : 'pitch-timer-status';
+  return `<div class="pitch-timer-overlay" id="pitch-timer-overlay" onclick="if(event.target===this)closePitchTimer()">
+    <div class="pitch-timer-modal" role="dialog" aria-modal="true" aria-label="Pitch Stopuhr">
+      <div class="pitch-timer-header">
+        <div>
+          <div class="pitch-timer-kicker">Pitch Training</div>
+          <div class="pitch-timer-title">Stopuhr & Countdown</div>
+          <div class="pitch-timer-copy">Trainiere deinen Pitch mit klarer Zeitführung. Countdown für enge Formate, Stoppuhr für freies Timing.</div>
+        </div>
+        <button type="button" class="pitch-timer-close" onclick="closePitchTimer()" aria-label="Schließen">✕</button>
+      </div>
+
+      <div class="pitch-timer-section">
+        <div class="pitch-timer-label">Modus</div>
+        <div class="pitch-timer-mode-group">
+          <button type="button" class="pitch-timer-chip${modeCountdownActive}" onclick="setPitchTimerMode('countdown')">Countdown</button>
+          <button type="button" class="pitch-timer-chip${modeStopwatchActive}" onclick="setPitchTimerMode('stopwatch')">Stoppuhr</button>
+        </div>
+      </div>
+
+      <div class="pitch-timer-section">
+        <div class="pitch-timer-label">Dauer</div>
+        <div class="pitch-timer-preset-group">
+          ${presetButtons}
+          <button type="button" class="pitch-timer-chip${customActive}" onclick="setPitchTimerPreset('custom')">Individuell</button>
+        </div>
+        <div class="pitch-timer-duration-slot">
+          <div class="pitch-timer-custom${pitchTimer.mode === 'countdown' ? '' : ' is-disabled'}">
+            <input class="pitch-timer-input" type="number" min="1" max="3599" value="${Math.max(1, Number(pitchTimer.customSeconds) || 90)}" oninput="onPitchTimerCustomInput(this.value)" ${(pitchTimer.mode === 'countdown' && pitchTimer.presetKey === 'custom') ? '' : 'disabled'}>
+            <div class="pitch-timer-hint">${pitchTimer.mode === 'countdown' ? 'Sekunden. Nur aktiv, wenn "Individuell" gewählt ist.' : 'Im Stoppuhr-Modus gibt es keine Zielzeit.'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="${displayClass}">
+        <div class="${statusClass}">${getTimerStatusLabel()}</div>
+        <div class="pitch-timer-time">${formatTimerDisplay(pitchTimer.displaySeconds)}</div>
+        <div class="pitch-timer-meta">${getTimerMetaLabel()}</div>
+      </div>
+
+      <div class="pitch-timer-section">
+        <div class="pitch-timer-controls">
+          ${pitchTimer.running
+            ? `<button type="button" class="pitch-timer-control warn" onclick="pausePitchTimer()">Pause</button>`
+            : `<button type="button" class="pitch-timer-control primary" onclick="startPitchTimer()">${pitchTimer.displaySeconds > 0 && !pitchTimer.ended && (pitchTimer.mode === 'stopwatch' || pitchTimer.displaySeconds !== getTimerBaseSeconds()) ? 'Fortsetzen' : 'Start'}</button>`}
+          <button type="button" class="pitch-timer-control" onclick="resetPitchTimer()">Reset</button>
+          <button type="button" class="pitch-timer-control" onclick="closePitchTimer()">Schließen</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
 
 function loadState() {
   QUESTIONS.forEach(q => {
@@ -1438,7 +1916,14 @@ function buildSidebar() {
     </div>`;
 
   BLOCKS.forEach(b => {
-    html += `<div class="nav-section-label" style="color:${b.color}99;">${b.name}</div>`;
+    const isOpen = sidebarSections[String(b.id)] !== false;
+    html += `<div class="nav-section-label" style="padding:0;">
+      <button class="nav-section-toggle ${isOpen ? 'is-open' : ''}" type="button" onclick="toggleSidebarSection(${b.id})" style="color:${b.color}99;">
+        <span class="nav-section-title">${b.name}</span>
+        <span class="nav-section-chevron">›</span>
+      </button>
+    </div>`;
+    if (!isOpen) return;
     b.nrs.forEach(nr => {
       const q = QUESTIONS.find(q => q.nr === nr);
       const isDone = !!state.done[`q_${nr}`];
@@ -1461,6 +1946,12 @@ function buildSidebar() {
   nav.innerHTML = html;
 }
 
+function toggleSidebarSection(blockId) {
+  const key = String(blockId);
+  sidebarSections[key] = !(sidebarSections[key] !== false);
+  buildSidebar();
+}
+
 function hasPitchContent() {
   return PITCH_SECTIONS.some(s => state.pitch[s.key]);
 }
@@ -1479,6 +1970,12 @@ function updateProgress() {
 const PAGE_ORDER = ['dashboard', ...QUESTIONS.map(q => `q_${q.nr}`), 'pitch'];
 
 function navigateTo(page) {
+  if (page !== 'pitch' && pitchTimer.running) {
+    pausePitchTimer();
+    pitchTimer.isOpen = false;
+  } else if (page !== 'pitch') {
+    pitchTimer.isOpen = false;
+  }
   state.currentPage = page;
   persistState();
   buildSidebar();
@@ -1921,6 +2418,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Enter key on setup
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && pitchTimer.isOpen) {
+    closePitchTimer();
+    return;
+  }
   const setup = document.getElementById('setup-screen');
   if (e.key === 'Enter' && setup && setup.style.display !== 'none') {
     startApp();
