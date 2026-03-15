@@ -13,22 +13,28 @@
    CSS VARIABLES & RESET
 ═══════════════════════════════════════════════════════════════ */
 :root {
-  --bg:       #05080B;
-  --bg2:      #080E14;
-  --card:     #0A1018;
-  --border:   #1a2738;
-  --border2:  #0e1c2a;
+  --bg:       #020617;
+  --bg2:      #0b1220;
+  --card:     #0f172a;
+  --border:   #334155;
+  --border2:  #1e293b;
   --cyan:     #00FAFF;
   --gold:     #FFC300;
   --orange:   #ff6b35;
   --green:    #4ade80;
   --red:      #ff4444;
-  --muted:    #6B7A8D;
-  --muted2:   #8B949E;
-  --text:     #EDF2F7;
-  --text2:    #C5CDD8;
-  --topbar-bg: rgba(8,14,20,0.88);
-  --topbar-border: rgba(255,255,255,0.06);
+  --muted:    #94a3b8;
+  --muted2:   #cbd5e1;
+  --text:     #f1f5f9;
+  --text2:    #e2e8f0;
+  --surface-soft: rgba(15,23,42,0.78);
+  --surface-muted: rgba(15,23,42,0.56);
+  --surface-strong: rgba(15,23,42,0.9);
+  --overlay-bg: rgba(2,6,23,0.74);
+  --modal-bg: linear-gradient(180deg, rgba(15,23,42,0.98), rgba(11,18,32,0.98));
+  --modal-border: rgba(148,163,184,0.18);
+  --topbar-bg: rgba(11,18,32,0.84);
+  --topbar-border: rgba(148,163,184,0.12);
   --topbar-shadow: 0 18px 50px rgba(0,0,0,0.22);
   --sidebar:  240px;
   --font-serif: 'Roboto', 'Segoe UI', -apple-system, Arial, sans-serif;
@@ -48,16 +54,22 @@ body {
   overflow-x: hidden;
 }
 body[data-theme="light"] {
-  --bg: #f3f7fb;
-  --bg2: #ffffff;
+  --bg: #f1f5f9;
+  --bg2: #f8fafc;
   --card: #ffffff;
-  --border: #d8e1eb;
+  --border: #e2e8f0;
   --border2: #e2e8f0;
   --muted: #64748b;
   --muted2: #475569;
-  --text: #0f172a;
+  --text: #1e293b;
   --text2: #1e293b;
-  --topbar-bg: rgba(255,255,255,0.9);
+  --surface-soft: rgba(255,255,255,0.86);
+  --surface-muted: rgba(248,250,252,0.96);
+  --surface-strong: rgba(255,255,255,0.98);
+  --overlay-bg: rgba(226,232,240,0.74);
+  --modal-bg: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99));
+  --modal-border: rgba(148,163,184,0.24);
+  --topbar-bg: rgba(255,255,255,0.92);
   --topbar-border: rgba(15,23,42,0.08);
   --topbar-shadow: 0 18px 40px rgba(15,23,42,0.08);
   background-image:
@@ -79,11 +91,13 @@ body[data-theme="light"] .q-completion {
   box-shadow: 0 14px 30px rgba(15,23,42,0.05);
 }
 body[data-theme="light"] .q-hint {
-  background: rgba(15,23,42,0.03);
+  background: rgba(255,255,255,0.72);
   border-left-color: rgba(15,23,42,0.12);
 }
 body[data-theme="light"] .nav-item:hover { background: rgba(15,23,42,0.04); }
 body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
+body[data-theme="light"] .pitch-timer-time { color: #0f172a; }
+body[data-theme="light"] .pitch-timer-display.is-ended .pitch-timer-time { color: #991b1b; }
 
 /* ═══════════════════════════════════════════════════════════════
    SETUP SCREEN
@@ -468,7 +482,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   right: 18px;
   z-index: 140;
   border: 1px solid var(--border);
-  background: var(--topbar-bg);
+  background: var(--surface-soft);
   color: var(--text2);
   box-shadow: var(--topbar-shadow);
   backdrop-filter: blur(18px);
@@ -498,7 +512,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .global-timer-toggle {
   border: 1px solid var(--border);
-  background: var(--topbar-bg);
+  background: var(--surface-soft);
   color: var(--text2);
   box-shadow: var(--topbar-shadow);
   backdrop-filter: blur(18px);
@@ -577,7 +591,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 32px;
 }
@@ -603,7 +617,14 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .kpi-sub { font-size: 0.72rem; color: var(--muted); }
 
-.block-cards { display: flex; flex-direction: column; gap: 12px; }
+.block-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.block-card.span-full {
+  grid-column: 1 / -1;
+}
 .block-card {
   background: var(--card);
   border-radius: 12px;
@@ -712,7 +733,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   margin-bottom: 28px;
   max-width: 580px;
   padding: 10px 14px;
-  background: rgba(255,255,255,0.02);
+  background: var(--surface-muted);
   border-left: 2px solid var(--border);
   border-radius: 0 6px 6px 0;
 }
@@ -852,7 +873,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   padding: 12px 16px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
+  background: var(--surface-muted);
   margin-bottom: 24px;
 }
 .q-completion-label { font-size: 0.78rem; color: var(--muted2); flex: 1; }
@@ -873,7 +894,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 ═══════════════════════════════════════════════════════════════ */
 .pitch-page { animation: fadeUp 0.3s ease; }
 .pitch-intro {
-  background: rgba(255,195,0,0.05);
+  background: color-mix(in srgb, var(--card) 88%, var(--gold) 12%);
   border: 1px solid rgba(255,195,0,0.15);
   border-radius: 12px;
   padding: 18px;
@@ -959,10 +980,159 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   font-size: 0.85rem;
   font-style: italic;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   VALUES PAGE
+═══════════════════════════════════════════════════════════════ */
+.values-page { animation: fadeUp 0.3s ease; }
+.values-phase-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.values-phase-pill {
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.values-phase-pill.active {
+  border-color: rgba(0,250,255,0.3);
+  background: rgba(0,250,255,0.08);
+}
+.values-phase-step {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+}
+.values-phase-title {
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 600;
+}
+.values-panel {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 20px;
+  padding: 24px;
+}
+.values-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.values-counter {
+  color: var(--muted2);
+  font-size: 0.84rem;
+}
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.value-chip {
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--text2);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 0.86rem;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+.value-chip:hover {
+  border-color: rgba(0,250,255,0.22);
+  background: color-mix(in srgb, var(--surface-muted) 78%, var(--cyan) 22%);
+}
+.value-chip.selected {
+  border-color: rgba(0,250,255,0.32);
+  background: color-mix(in srgb, var(--card) 82%, var(--cyan) 18%);
+  color: var(--text);
+}
+.value-top3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 20px;
+}
+.value-top3-badge {
+  border: 1px solid rgba(255,195,0,0.22);
+  background: rgba(255,195,0,0.08);
+  color: var(--gold);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.values-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.values-button {
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--text2);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+}
+.values-button.primary {
+  background: rgba(0,250,255,0.08);
+  border-color: rgba(0,250,255,0.28);
+  color: var(--cyan);
+}
+.values-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.values-summary {
+  margin-top: 18px;
+  border: 1px solid rgba(255,195,0,0.18);
+  background: color-mix(in srgb, var(--card) 90%, var(--gold) 10%);
+  border-radius: 16px;
+  padding: 18px;
+}
+.values-summary-title {
+  color: var(--gold);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+}
+.values-mantra-label {
+  color: var(--muted2);
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+.values-mantra-prefix {
+  color: var(--text2);
+  font-size: 0.96rem;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.values-mantra-prefix strong {
+  color: var(--cyan);
+  font-weight: 600;
+}
+.values-empty {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
 .pitch-timer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5,10,16,0.74);
+  background: var(--overlay-bg);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -973,8 +1143,8 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 .pitch-timer-modal {
   width: min(560px, 100%);
   min-height: 620px;
-  background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(10,15,25,0.98));
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
   border-radius: 22px;
   box-shadow: 0 24px 80px rgba(0,0,0,0.36);
   padding: 24px;
@@ -1006,7 +1176,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .pitch-timer-close {
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
+  background: var(--surface-muted);
   color: var(--muted2);
   width: 38px;
   height: 38px;
@@ -1016,7 +1186,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .pitch-timer-close:hover {
   color: var(--text);
-  border-color: rgba(255,255,255,0.18);
+  border-color: var(--cyan);
 }
 .pitch-timer-mode-group,
 .pitch-timer-preset-group,
@@ -1037,7 +1207,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .pitch-timer-chip {
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
+  background: var(--surface-muted);
   color: var(--text2);
   padding: 10px 14px;
   border-radius: 999px;
@@ -1048,7 +1218,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .pitch-timer-chip:hover {
   transform: translateY(-1px);
-  border-color: rgba(255,255,255,0.18);
+  border-color: rgba(0,250,255,0.28);
 }
 .pitch-timer-chip.active {
   background: rgba(255,195,0,0.14);
@@ -1072,7 +1242,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .pitch-timer-input {
   width: 120px;
-  background: rgba(255,255,255,0.03);
+  background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px 12px;
@@ -1091,13 +1261,13 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   margin-top: 22px;
   border: 1px solid rgba(255,195,0,0.16);
   border-radius: 20px;
-  background: radial-gradient(circle at top, rgba(255,195,0,0.12), rgba(255,255,255,0.02) 58%);
+  background: radial-gradient(circle at top, rgba(255,195,0,0.12), color-mix(in srgb, var(--card) 86%, transparent) 58%);
   padding: 26px 22px;
   text-align: center;
 }
 .pitch-timer-display.is-ended {
   border-color: rgba(255,68,68,0.36);
-  background: radial-gradient(circle at top, rgba(255,68,68,0.16), rgba(255,255,255,0.02) 58%);
+  background: radial-gradient(circle at top, rgba(255,68,68,0.16), color-mix(in srgb, var(--card) 86%, transparent) 58%);
 }
 .pitch-timer-status {
   font-size: 0.78rem;
@@ -1124,7 +1294,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 }
 .pitch-timer-control {
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
+  background: var(--surface-muted);
   color: var(--text);
   padding: 10px 16px;
   border-radius: 12px;
@@ -1143,9 +1313,10 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   color: var(--gold);
 }
 .pitch-timer-control:hover {
-  border-color: rgba(255,255,255,0.18);
+  border-color: rgba(0,250,255,0.22);
 }
 @media (max-width: 720px) {
+  .values-phase-bar { grid-template-columns: 1fr; }
   .pitch-timer-modal { padding: 18px; border-radius: 18px; min-height: auto; }
   .pitch-timer-header { flex-direction: column; }
   .pitch-timer-close { align-self: flex-end; }
@@ -1250,6 +1421,7 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
   }
   #content { padding: 22px 6px 0; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .block-cards { grid-template-columns: 1fr; }
   .q-title { font-size: 1.3rem; }
 }
 
@@ -1282,8 +1454,8 @@ body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
 <div id="toast"></div>
 <div id="pitch-timer-root"></div>
 <div class="floating-tools">
-  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">☀ Hell</button>
-  <button class="global-timer-toggle" type="button" onclick="openPitchTimer()">⏱ Uhr</button>
+  <button class="theme-toggle" id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Farbschema wechseln">☀ Hell</button>
+  <button class="global-timer-toggle" id="global-timer-toggle" type="button" onclick="openPitchTimer()" aria-label="Stopuhr und Countdown öffnen">⏱ Uhr</button>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════
@@ -1536,6 +1708,18 @@ const PITCH_SECTIONS = [
   { key: "unterschied", label: "Differenzierung",   color: "#ff6b35", nr: "05", desc: "Warum du und nicht jemand anderes? Was ist dein Vorteil?", placeholder: "Was mich unterscheidet ist..." },
   { key: "cta",         label: "Call to Action",    color: "#4ade80", nr: "06", desc: "Was soll die Person als nächstes tun?", placeholder: "Der nächste Schritt ist..." },
 ];
+const VALUES_PHASES = [
+  { key: 'discover', label: 'Resonanz' },
+  { key: 'refine', label: 'Top 3' },
+  { key: 'focus', label: 'Fokus' },
+];
+const VALUES_LIST = [
+  "Vertrauen", "Freiheit", "Sicherheit", "Ehrlichkeit", "Gerechtigkeit",
+  "Verantwortung", "Respekt", "Mitgefühl", "Mut", "Loyalität",
+  "Offenheit", "Zuverlässigkeit", "Toleranz", "Neugier", "Bescheidenheit",
+  "Selbstbestimmung", "Hilfsbereitschaft", "Kreativität", "Dankbarkeit", "Unabhängigkeit",
+  "Teamgeist", "Disziplin", "Geduld", "Engagement", "Authentizität"
+];
 const SIDEBAR_SECTION_DEFAULTS = Object.fromEntries(BLOCKS.map((b) => [String(b.id), true]));
 const THEME_STORAGE_KEY = 'vision_workshop_theme';
 
@@ -1552,6 +1736,12 @@ const INSIGHT_TYPES = [
 // ═══════════════════════════════════════════════════════════════
 const STORAGE_KEY_BASE = 'vision_workshop_v1';
 const ACTIVE_SESSION_KEY = 'vision_workshop_active_key';
+const DEFAULT_VALUES_STATE = Object.freeze({
+  phase: 'discover',
+  pool: [],
+  top3: [],
+  statement: '',
+});
 
 function getSlugForName(name) {
   return (name || 'anon')
@@ -1593,12 +1783,34 @@ function loadStateForName(name) {
     const raw = localStorage.getItem(getStorageKeyForName(name));
     if (!raw) return false;
     const parsed = JSON.parse(raw);
-    state = { ...state, ...parsed };
+    state = normalizeState(parsed);
     return true;
   } catch(e) {
     console.warn('State load failed:', e);
     return false;
   }
+}
+
+function restoreStateFromStorageKey(storageKey) {
+  if (!storageKey) return false;
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    state = normalizeState(parsed);
+    sessionStorage.setItem(ACTIVE_SESSION_KEY, storageKey);
+    loadState();
+    return true;
+  } catch (e) {
+    console.warn('Stored session restore failed:', e);
+    return false;
+  }
+}
+
+function restoreLatestStoredSession() {
+  const [latestSession] = listStoredSessions();
+  if (!latestSession) return false;
+  return restoreStateFromStorageKey(latestSession.key);
 }
 
 function persistState(options = {}) {
@@ -1630,15 +1842,34 @@ function persistState(options = {}) {
   }
 }
 
-let state = {
-  user: { name: '', company: '' },
-  answers: {},
-  insights: {},
-  done: {},
-  pitch: {},
-  currentPage: 'dashboard',
-  lastSaved: null,
-};
+function createDefaultState() {
+  return {
+    user: { name: '', company: '' },
+    answers: {},
+    insights: {},
+    done: {},
+    pitch: {},
+    values: { ...DEFAULT_VALUES_STATE },
+    currentPage: 'dashboard',
+    lastSaved: null,
+  };
+}
+
+function normalizeState(candidate = {}) {
+  const base = createDefaultState();
+  return {
+    ...base,
+    ...candidate,
+    user: { ...base.user, ...(candidate.user || {}) },
+    answers: { ...base.answers, ...(candidate.answers || {}) },
+    insights: { ...base.insights, ...(candidate.insights || {}) },
+    done: { ...base.done, ...(candidate.done || {}) },
+    pitch: { ...base.pitch, ...(candidate.pitch || {}) },
+    values: { ...DEFAULT_VALUES_STATE, ...(candidate.values || {}) },
+  };
+}
+
+let state = createDefaultState();
 let saveTimeout = null;
 let sidebarSections = { ...SIDEBAR_SECTION_DEFAULTS };
 const TIMER_PRESETS = [
@@ -1878,15 +2109,7 @@ function saveState() {
 function startApp() {
   const name = document.getElementById('setup-name').value.trim() || 'Teilnehmer';
   const company = document.getElementById('setup-company').value.trim();
-  state = {
-    user: { name: '', company: '' },
-    answers: {},
-    insights: {},
-    done: {},
-    pitch: {},
-    currentPage: 'dashboard',
-    lastSaved: null,
-  };
+  state = createDefaultState();
   loadStateForName(name);
   state.user = { name, company };
   loadState();
@@ -1913,17 +2136,22 @@ function buildSidebar() {
     <div class="nav-section-label">Navigation</div>
     <div class="nav-item ${state.currentPage==='dashboard'?'active':''}" onclick="navigateTo('dashboard')">
       <span class="nav-nr">◎</span> Dashboard
+    </div>
+    <div class="nav-item ${state.currentPage==='values'?'active':''}" onclick="navigateTo('values')">
+      <span class="nav-nr">◆</span> Werte
+      <div class="nav-dot ${hasCompletedValues()?'done':hasValuesContent()?'partial':''}"></div>
     </div>`;
 
   BLOCKS.forEach(b => {
     const isOpen = sidebarSections[String(b.id)] !== false;
     html += `<div class="nav-section-label" style="padding:0;">
-      <button class="nav-section-toggle ${isOpen ? 'is-open' : ''}" type="button" onclick="toggleSidebarSection(${b.id})" style="color:${b.color}99;">
+      <button class="nav-section-toggle ${isOpen ? 'is-open' : ''}" type="button" onclick="toggleSidebarSection(${b.id})" aria-expanded="${isOpen ? 'true' : 'false'}" aria-controls="nav-section-${b.id}" style="color:${b.color}99;">
         <span class="nav-section-title">${b.name}</span>
         <span class="nav-section-chevron">›</span>
       </button>
     </div>`;
     if (!isOpen) return;
+    html += `<div id="nav-section-${b.id}">`;
     b.nrs.forEach(nr => {
       const q = QUESTIONS.find(q => q.nr === nr);
       const isDone = !!state.done[`q_${nr}`];
@@ -1935,6 +2163,7 @@ function buildSidebar() {
         <div class="nav-dot ${isDone?'done':hasText?'partial':''}"></div>
       </div>`;
     });
+    html += `</div>`;
   });
 
   html += `<div class="nav-section-label">Pitch</div>
@@ -1952,8 +2181,24 @@ function toggleSidebarSection(blockId) {
   buildSidebar();
 }
 
+function ensureVisibleSidebarSection(page) {
+  if (!page || !page.startsWith('q_')) return;
+  const nr = parseInt(page.replace('q_', ''), 10);
+  const block = BLOCKS.find((entry) => entry.nrs.includes(nr));
+  if (!block) return;
+  sidebarSections[String(block.id)] = true;
+}
+
 function hasPitchContent() {
   return PITCH_SECTIONS.some(s => state.pitch[s.key]);
+}
+
+function hasValuesContent() {
+  return (state.values?.pool?.length || 0) > 0 || (state.values?.top3?.length || 0) === 3 || !!(state.values?.statement || '').trim();
+}
+
+function hasCompletedValues() {
+  return (state.values?.top3?.length || 0) === 3 && !!(state.values?.statement || '').trim();
 }
 
 function updateProgress() {
@@ -1967,7 +2212,7 @@ function updateProgress() {
 // ═══════════════════════════════════════════════════════════════
 //  NAVIGATION
 // ═══════════════════════════════════════════════════════════════
-const PAGE_ORDER = ['dashboard', ...QUESTIONS.map(q => `q_${q.nr}`), 'pitch'];
+const PAGE_ORDER = ['dashboard', 'values', ...QUESTIONS.map(q => `q_${q.nr}`), 'pitch'];
 
 function navigateTo(page) {
   if (page !== 'pitch' && pitchTimer.running) {
@@ -1976,6 +2221,7 @@ function navigateTo(page) {
   } else if (page !== 'pitch') {
     pitchTimer.isOpen = false;
   }
+  ensureVisibleSidebarSection(page);
   state.currentPage = page;
   persistState();
   buildSidebar();
@@ -2000,6 +2246,8 @@ function updateTopbar(page) {
   const tc = document.getElementById('tb-current');
   if (page === 'dashboard') {
     tb.textContent = 'Workshop'; tc.textContent = 'Dashboard';
+  } else if (page === 'values') {
+    tb.textContent = 'Fundament'; tc.textContent = 'Werte';
   } else if (page === 'pitch') {
     tb.textContent = 'Pitch'; tc.textContent = 'Pitch Builder';
   } else {
@@ -2017,6 +2265,8 @@ function renderContent(page) {
   const el = document.getElementById('content');
   if (page === 'dashboard') {
     el.innerHTML = renderDashboard();
+  } else if (page === 'values') {
+    el.innerHTML = renderValuesPage();
   } else if (page === 'pitch') {
     el.innerHTML = renderPitch();
     bindPitchListeners();
@@ -2053,6 +2303,10 @@ function renderDashboard() {
   }).join('');
 
   const pitchDone = PITCH_SECTIONS.filter(s => state.pitch[s.key]).length;
+  const valuesDone = hasCompletedValues() ? 3 : (state.values?.top3?.length || 0);
+  const valuesLabel = state.values?.statement?.trim()
+    ? escHtml(state.values.statement)
+    : (state.values?.top3?.length ? escHtml(state.values.top3.join(' · ')) : 'Noch nicht definiert');
 
   return `<div class="dashboard-header">
     <div class="dash-eyebrow">Realize Your Vision · Workbook</div>
@@ -2076,11 +2330,27 @@ function renderDashboard() {
       <div class="kpi-value" style="color:#FFC300">${pitchDone}/6</div>
       <div class="kpi-sub">befüllt</div>
     </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Werte</div>
+      <div class="kpi-value" style="color:#00FAFF">${valuesDone}/3</div>
+      <div class="kpi-sub">priorisiert</div>
+    </div>
   </div>
 
   <div class="block-cards">
+    <div class="block-card span-full" data-block="values" onclick="navigateTo('values')" style="cursor:pointer;">
+      <div class="block-card-header">
+        <div class="block-card-title" style="color:#00FAFF">◆ Werte</div>
+        <div class="block-card-count" style="color:#00FAFF">${valuesDone}/3 definiert</div>
+      </div>
+      <div class="block-progress-row">
+        <div class="block-prog-bar"><div class="block-prog-fill" style="width:${Math.round((valuesDone/3)*100)}%;background:#00FAFF"></div></div>
+        <div class="block-prog-pct">${Math.round((valuesDone/3)*100)}%</div>
+      </div>
+      <div class="block-card-count" style="color:var(--muted2);font-size:0.74rem;text-align:left;margin-top:10px;white-space:normal;">${valuesLabel}</div>
+    </div>
     ${blockCards}
-    <div class="block-card" data-block="pitch" onclick="navigateTo('pitch')" style="cursor:pointer;">
+    <div class="block-card span-full" data-block="pitch" onclick="navigateTo('pitch')" style="cursor:pointer;">
       <div class="block-card-header">
         <div class="block-card-title" style="color:#FFC300">🎯 Pitch Builder</div>
         <div class="block-card-count" style="color:#FFC300">${pitchDone}/6 Elemente</div>
@@ -2091,6 +2361,141 @@ function renderDashboard() {
       </div>
     </div>
   </div>`;
+}
+
+function renderValuesPage() {
+  const values = state.values || { phase: 'discover', pool: [], top3: [], statement: '' };
+  const phase = values.phase || 'discover';
+  const sourceList = phase === 'discover' ? VALUES_LIST : values.pool;
+  const counterLabel = phase === 'discover'
+    ? `${values.pool.length} ausgewählt`
+    : phase === 'refine'
+      ? `${values.top3.length} / 3 priorisiert`
+      : `Top 3 fixiert`;
+  const chips = sourceList.map((value) => {
+    const selected = phase === 'discover'
+      ? values.pool.includes(value)
+      : values.top3.includes(value);
+    return `<button type="button" class="value-chip ${selected ? 'selected' : ''}" onclick="toggleValueSelection('${value.replace(/'/g, "\\'")}')">${escHtml(value)}</button>`;
+  }).join('');
+  const phaseBar = VALUES_PHASES.map((item, idx) => {
+    const active = item.key === phase ? ' active' : '';
+    return `<div class="values-phase-pill${active}">
+      <div class="values-phase-step">Schritt ${idx + 1}</div>
+      <div class="values-phase-title">${item.label}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="values-page">
+    <div class="dash-eyebrow">Fundament</div>
+    <h1 class="dash-title" style="margin-bottom:6px;">Werte-Kompass</h1>
+    <p class="dash-sub" style="margin-bottom:28px;">Wähle erst alle Werte mit Resonanz, verdichte dann auf deine Top 3 und formuliere daraus einen Fokus-Satz.</p>
+
+    <div class="values-phase-bar">${phaseBar}</div>
+
+    <div class="values-panel">
+      <div class="values-toolbar">
+        <div class="values-counter">${counterLabel}</div>
+        ${phase === 'focus' ? `<div class="values-empty">Deine Top 3 bleiben editierbar über "Top 3 neu wählen".</div>` : ''}
+      </div>
+
+      ${phase !== 'focus' ? `
+        <div class="q-hint">${phase === 'discover'
+          ? 'Markiere alles, was für dich wirklich Resonanz hat. Weiter geht es ab mindestens 3 Werten.'
+          : 'Reduziere bewusst auf genau 3 Werte. Mehr ist hier Ausweichbewegung.'}</div>
+        <div class="values-grid">${chips}</div>
+      ` : `
+        <div class="values-summary">
+          <div class="values-summary-title">Deine Top 3 Werte</div>
+          <div class="value-top3">${values.top3.map((value) => `<span class="value-top3-badge">${escHtml(value)}</span>`).join('')}</div>
+          <div class="values-mantra-label">Vervollständige den Satz:</div>
+          <div class="values-mantra-prefix">${escHtml(getValuesMantraPrefix())}</div>
+          <textarea class="answer-textarea" id="values-statement-input" placeholder="z. B. in Entscheidungen klar, ehrlich und mutig handle." oninput="onValuesStatementChange(this.value)">${escHtml(values.statement || '')}</textarea>
+        </div>
+      `}
+
+      ${phase === 'focus' && values.statement?.trim() ? `<div class="values-summary" id="values-mantra-preview">
+        <div class="values-summary-title">Fokus-Satz</div>
+        <div class="pitch-preview-content" style="font-size:0.98rem;">${escHtml(buildValuesMantra())}</div>
+      </div>` : ''}
+
+      <div class="values-actions">
+        ${phase === 'refine' ? `<button type="button" class="values-button" onclick="goToValuesPhase('discover')">Zurück</button>` : ''}
+        ${phase === 'focus' ? `<button type="button" class="values-button" onclick="goToValuesPhase('refine')">Top 3 neu wählen</button>` : ''}
+        ${phase === 'discover'
+          ? `<button type="button" class="values-button primary" onclick="goToValuesPhase('refine')" ${(values.pool.length < 3) ? 'disabled' : ''}>Zu den Top 3</button>`
+          : phase === 'refine'
+            ? `<button type="button" class="values-button primary" onclick="goToValuesPhase('focus')" ${(values.top3.length !== 3) ? 'disabled' : ''}>Zum Fokus-Satz</button>`
+            : `<button type="button" class="values-button primary" onclick="showToast('✓ Werte gespeichert', '#00FAFF')" ${!values.statement?.trim() ? 'disabled' : ''}>Werte sichern</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleValueSelection(value) {
+  const values = state.values || { phase: 'discover', pool: [], top3: [], statement: '' };
+  if (values.phase === 'discover') {
+    values.pool = values.pool.includes(value)
+      ? values.pool.filter((item) => item !== value)
+      : [...values.pool, value];
+    if (values.top3.length) {
+      values.top3 = values.top3.filter((item) => values.pool.includes(item));
+    }
+  } else if (values.phase === 'refine') {
+    if (values.top3.includes(value)) {
+      values.top3 = values.top3.filter((item) => item !== value);
+    } else if (values.top3.length < 3) {
+      values.top3 = [...values.top3, value];
+    }
+  }
+  state.values = values;
+  saveState();
+  renderContent('values');
+  buildSidebar();
+}
+
+function goToValuesPhase(nextPhase) {
+  const values = state.values || { phase: 'discover', pool: [], top3: [], statement: '' };
+  if (nextPhase === 'refine' && values.pool.length < 3) return;
+  if (nextPhase === 'focus' && values.top3.length !== 3) return;
+  values.phase = nextPhase;
+  if (nextPhase === 'refine' && !values.top3.length) {
+    values.top3 = values.pool.slice(0, 3);
+  }
+  state.values = values;
+  saveState();
+  renderContent('values');
+  buildSidebar();
+}
+
+function onValuesStatementChange(value) {
+  state.values.statement = value;
+  saveState();
+  const preview = document.getElementById('values-mantra-preview');
+  if (!preview) {
+    if (value.trim()) renderContent('values');
+    return;
+  }
+  if (!value.trim()) {
+    preview.remove();
+    return;
+  }
+  preview.innerHTML = `<div class="values-summary-title">Fokus-Satz</div><div class="pitch-preview-content" style="font-size:0.98rem;">${escHtml(buildValuesMantra())}</div>`;
+}
+
+function buildValuesMantra() {
+  const top3 = state.values?.top3 || [];
+  if (top3.length !== 3) return '';
+  const statement = (state.values?.statement || '').trim();
+  const valueString = top3.slice(0, 2).join(', ') + ' und ' + top3[2];
+  return `Ich lebe meine Werte ${valueString}, indem ich ${statement}`;
+}
+
+function getValuesMantraPrefix() {
+  const top3 = state.values?.top3 || [];
+  if (top3.length !== 3) return 'Ich lebe meine Werte ...';
+  const valueString = top3.slice(0, 2).join(', ') + ' und ' + top3[2];
+  return `Ich lebe meine Werte ${valueString}, indem ich ...`;
 }
 
 // ── QUESTION ──────────────────────────────────────────────────
@@ -2345,6 +2750,7 @@ function exportData() {
     answers: state.answers,
     insights: state.insights,
     done: state.done,
+    values: state.values,
     pitch: state.pitch,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2383,22 +2789,22 @@ window.addEventListener('DOMContentLoaded', () => {
   applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || 'dark');
   loadState();
   const activeKey = sessionStorage.getItem(ACTIVE_SESSION_KEY);
+  let restored = false;
+  let restoredFromLatest = false;
   if (activeKey) {
-    try {
-      const raw = localStorage.getItem(activeKey);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        state = { ...state, ...parsed };
-        loadState();
-      }
-    } catch (e) {
-      console.warn('Active session restore failed:', e);
-    }
+    restored = restoreStateFromStorageKey(activeKey);
+  }
+  if (!restored) {
+    restored = restoreLatestStoredSession();
+    restoredFromLatest = restored;
   }
   if (state.user.name) {
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
     initApp();
+    if (restoredFromLatest) {
+      showToast('↩ Letzte Sitzung geladen', '#00FAFF');
+    }
     return;
   }
   const sessions = listStoredSessions();
