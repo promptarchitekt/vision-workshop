@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vision Workshop · Realize Your Vision</title>
-<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
-<link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+<link rel="icon" type="image/png" href="/chili-pia-spicyup_favicon.png">
+<link rel="apple-touch-icon" href="/chili-pia-spicyup_favicon.png">
 
 <style>
 /* ═══════════════════════════════════════════════════════════════
@@ -54,27 +53,27 @@ body {
   overflow-x: hidden;
 }
 body[data-theme="light"] {
-  --bg: #f1f5f9;
-  --bg2: #f8fafc;
+  --bg: #f3f6fa;
+  --bg2: #f7fafc;
   --card: #ffffff;
-  --border: #e2e8f0;
-  --border2: #e2e8f0;
+  --border: #d4dde8;
+  --border2: #cbd5e1;
   --muted: #64748b;
   --muted2: #475569;
   --text: #1e293b;
   --text2: #1e293b;
-  --surface-soft: rgba(255,255,255,0.86);
-  --surface-muted: rgba(248,250,252,0.96);
-  --surface-strong: rgba(255,255,255,0.98);
-  --overlay-bg: rgba(226,232,240,0.74);
-  --modal-bg: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99));
-  --modal-border: rgba(148,163,184,0.24);
+  --surface-soft: rgba(250,252,255,0.96);
+  --surface-muted: rgba(255,255,255,0.88);
+  --surface-strong: rgba(255,255,255,1);
+  --overlay-bg: rgba(226,232,240,0.62);
+  --modal-bg: linear-gradient(180deg, rgba(255,255,255,0.995), rgba(248,250,252,0.99));
+  --modal-border: rgba(100,116,139,0.18);
   --topbar-bg: rgba(255,255,255,0.92);
-  --topbar-border: rgba(15,23,42,0.08);
-  --topbar-shadow: 0 18px 40px rgba(15,23,42,0.08);
+  --topbar-border: rgba(148,163,184,0.28);
+  --topbar-shadow: 0 16px 34px rgba(15,23,42,0.06);
   background-image:
-    radial-gradient(circle at top right, rgba(0,186,196,0.10), transparent 32%),
-    radial-gradient(circle at bottom left, rgba(255,195,0,0.10), transparent 28%);
+    radial-gradient(circle at top right, rgba(56,189,248,0.035), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(255,195,0,0.03), transparent 26%);
 }
 button { cursor: pointer; font-family: var(--font-sans); }
 textarea, input { font-family: var(--font-sans); }
@@ -87,17 +86,104 @@ body[data-theme="light"] .pitch-preview,
 body[data-theme="light"] .answer-textarea,
 body[data-theme="light"] .pitch-textarea,
 body[data-theme="light"] .pitch-intro,
-body[data-theme="light"] .q-completion {
-  box-shadow: 0 14px 30px rgba(15,23,42,0.05);
+body[data-theme="light"] .q-completion,
+body[data-theme="light"] .values-panel {
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 14px 32px rgba(15,23,42,0.055);
+}
+body[data-theme="light"] .setup-card,
+body[data-theme="light"] .kpi-card,
+body[data-theme="light"] .block-card,
+body[data-theme="light"] .insights-section,
+body[data-theme="light"] .pitch-preview,
+body[data-theme="light"] .answer-textarea,
+body[data-theme="light"] .pitch-textarea,
+body[data-theme="light"] .pitch-intro,
+body[data-theme="light"] .q-completion,
+body[data-theme="light"] .values-panel,
+body[data-theme="light"] .values-phase-pill,
+body[data-theme="light"] .value-chip,
+body[data-theme="light"] .values-button,
+body[data-theme="light"] .theme-toggle,
+body[data-theme="light"] .global-timer-toggle,
+body[data-theme="light"] .topbar,
+body[data-theme="light"] .pitch-timer-modal,
+body[data-theme="light"] .pitch-timer-chip,
+body[data-theme="light"] .pitch-timer-input,
+body[data-theme="light"] .pitch-timer-control,
+body[data-theme="light"] .pitch-timer-close {
+  border-color: rgba(148,163,184,0.24);
 }
 body[data-theme="light"] .q-hint {
-  background: rgba(255,255,255,0.72);
-  border-left-color: rgba(15,23,42,0.12);
+  background: rgba(248,250,252,0.86);
+  border-left-color: rgba(100,116,139,0.24);
 }
 body[data-theme="light"] .nav-item:hover { background: rgba(15,23,42,0.04); }
-body[data-theme="light"] .nav-item.active { background: rgba(0,186,196,0.10); }
+body[data-theme="light"] .nav-item.active {
+  background: rgba(148,163,184,0.12);
+  border-left-color: rgba(71,85,105,0.55);
+}
+body[data-theme="light"] .nav-item.active .nav-nr { color: var(--text2); }
+body[data-theme="light"] .nav-section-toggle {
+  color: var(--muted2) !important;
+}
+body[data-theme="light"] .nav-section-toggle:hover,
+body[data-theme="light"] .nav-section-toggle.is-open {
+  color: var(--text2) !important;
+}
 body[data-theme="light"] .pitch-timer-time { color: #0f172a; }
 body[data-theme="light"] .pitch-timer-display.is-ended .pitch-timer-time { color: #991b1b; }
+body[data-theme="light"] .pitch-timer-display {
+  border-color: rgba(245, 158, 11, 0.2);
+}
+body[data-theme="light"] .values-summary,
+body[data-theme="light"] .pitch-intro,
+body[data-theme="light"] .pitch-preview {
+  border-color: rgba(245, 158, 11, 0.22);
+}
+body[data-theme="light"] #sidebar {
+  background: rgba(247,250,252,0.98);
+  border-right-color: rgba(100,116,139,0.22);
+}
+body[data-theme="light"] .topbar,
+body[data-theme="light"] .theme-toggle,
+body[data-theme="light"] .global-timer-toggle {
+  background: rgba(248,250,252,0.94);
+}
+body[data-theme="light"] .values-phase-pill,
+body[data-theme="light"] .value-chip,
+body[data-theme="light"] .values-button,
+body[data-theme="light"] .pitch-timer-chip,
+body[data-theme="light"] .pitch-timer-input,
+body[data-theme="light"] .pitch-timer-control,
+body[data-theme="light"] .pitch-timer-close {
+  background: rgba(248,250,252,0.92);
+}
+body[data-theme="light"] .values-summary {
+  background: linear-gradient(180deg, rgba(255,252,244,0.92), rgba(255,248,235,0.88));
+}
+body[data-theme="light"] .pitch-timer-modal {
+  box-shadow: 0 20px 50px rgba(15,23,42,0.10);
+}
+body[data-theme="light"] .block-card-title,
+body[data-theme="light"] .block-card-count {
+  color: var(--text) !important;
+}
+body[data-theme="light"] .block-card-count,
+body[data-theme="light"] .block-prog-pct,
+body[data-theme="light"] .kpi-sub,
+body[data-theme="light"] .dash-sub {
+  color: var(--muted) !important;
+}
+body[data-theme="light"] .block-prog-bar,
+body[data-theme="light"] .progress-bar-track {
+  background: rgba(148,163,184,0.28);
+}
+body[data-theme="light"] .block-card:hover {
+  border-color: rgba(100,116,139,0.3);
+  box-shadow: 0 14px 30px rgba(15,23,42,0.07);
+  transform: translateY(-1px);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    SETUP SCREEN
@@ -349,6 +435,10 @@ body[data-theme="light"] .pitch-timer-display.is-ended .pitch-timer-time { color
   cursor: pointer;
   text-align: left;
 }
+.nav-section-toggle[data-block="1"] { color: color-mix(in srgb, var(--cyan) 74%, var(--muted2) 26%); }
+.nav-section-toggle[data-block="2"] { color: color-mix(in srgb, var(--gold) 74%, var(--muted2) 26%); }
+.nav-section-toggle[data-block="3"] { color: color-mix(in srgb, var(--orange) 74%, var(--muted2) 26%); }
+.nav-section-toggle[data-block="4"] { color: color-mix(in srgb, var(--green) 74%, var(--muted2) 26%); }
 .nav-section-toggle:hover {
   color: var(--text2);
 }
@@ -645,8 +735,21 @@ body[data-theme="light"] .pitch-timer-display.is-ended .pitch-timer-time { color
 .block-card[data-block="2"]::before { background: var(--gold); }
 .block-card[data-block="3"]::before { background: var(--orange); }
 .block-card[data-block="4"]::before { background: var(--green); }
+.block-card[data-block="values"]::before { background: var(--cyan); }
 .block-card[data-block="pitch"]::before { background: var(--gold); }
 .block-card:hover { border-color: var(--border); transform: translateX(2px); }
+.block-card[data-block="1"] .block-card-title,
+.block-card[data-block="1"] .block-card-count { color: color-mix(in srgb, var(--cyan) 78%, var(--text) 22%); }
+.block-card[data-block="2"] .block-card-title,
+.block-card[data-block="2"] .block-card-count { color: color-mix(in srgb, var(--gold) 78%, var(--text) 22%); }
+.block-card[data-block="3"] .block-card-title,
+.block-card[data-block="3"] .block-card-count { color: color-mix(in srgb, var(--orange) 78%, var(--text) 22%); }
+.block-card[data-block="4"] .block-card-title,
+.block-card[data-block="4"] .block-card-count { color: color-mix(in srgb, var(--green) 78%, var(--text) 22%); }
+.block-card[data-block="values"] .block-card-title,
+.block-card[data-block="values"] .block-card-count { color: color-mix(in srgb, var(--cyan) 78%, var(--text) 22%); }
+.block-card[data-block="pitch"] .block-card-title,
+.block-card[data-block="pitch"] .block-card-count { color: color-mix(in srgb, var(--gold) 78%, var(--text) 22%); }
 .block-card-header {
   display: flex;
   align-items: center;
@@ -2145,7 +2248,7 @@ function buildSidebar() {
   BLOCKS.forEach(b => {
     const isOpen = sidebarSections[String(b.id)] !== false;
     html += `<div class="nav-section-label" style="padding:0;">
-      <button class="nav-section-toggle ${isOpen ? 'is-open' : ''}" type="button" onclick="toggleSidebarSection(${b.id})" aria-expanded="${isOpen ? 'true' : 'false'}" aria-controls="nav-section-${b.id}" style="color:${b.color}99;">
+      <button class="nav-section-toggle ${isOpen ? 'is-open' : ''}" data-block="${b.id}" type="button" onclick="toggleSidebarSection(${b.id})" aria-expanded="${isOpen ? 'true' : 'false'}" aria-controls="nav-section-${b.id}">
         <span class="nav-section-title">${b.name}</span>
         <span class="nav-section-chevron">›</span>
       </button>
@@ -2291,8 +2394,8 @@ function renderDashboard() {
     const dots = bqs.map(q => `<div class="q-dot ${state.done['q_'+q.nr]?'done':''}"></div>`).join('');
     return `<div class="block-card" data-block="${b.id}" onclick="navigateTo('q_${b.nrs[0]}')" style="cursor:pointer;">
       <div class="block-card-header">
-        <div class="block-card-title" style="color:${b.color}">${b.name}</div>
-        <div class="block-card-count" style="color:${b.color}">${bdone}/${bqs.length} fertig</div>
+        <div class="block-card-title">${b.name}</div>
+        <div class="block-card-count">${bdone}/${bqs.length} fertig</div>
       </div>
       <div class="block-progress-row">
         <div class="block-prog-bar"><div class="block-prog-fill" style="width:${Math.round((bdone/bqs.length)*100)}%;background:${b.color}"></div></div>
@@ -2340,20 +2443,20 @@ function renderDashboard() {
   <div class="block-cards">
     <div class="block-card span-full" data-block="values" onclick="navigateTo('values')" style="cursor:pointer;">
       <div class="block-card-header">
-        <div class="block-card-title" style="color:#00FAFF">◆ Werte</div>
-        <div class="block-card-count" style="color:#00FAFF">${valuesDone}/3 definiert</div>
+        <div class="block-card-title">Werte</div>
+        <div class="block-card-count">${valuesDone}/3 definiert</div>
       </div>
       <div class="block-progress-row">
         <div class="block-prog-bar"><div class="block-prog-fill" style="width:${Math.round((valuesDone/3)*100)}%;background:#00FAFF"></div></div>
         <div class="block-prog-pct">${Math.round((valuesDone/3)*100)}%</div>
       </div>
-      <div class="block-card-count" style="color:var(--muted2);font-size:0.74rem;text-align:left;margin-top:10px;white-space:normal;">${valuesLabel}</div>
+      <div class="block-card-count" style="font-size:0.74rem;text-align:left;margin-top:10px;white-space:normal;">${valuesLabel}</div>
     </div>
     ${blockCards}
     <div class="block-card span-full" data-block="pitch" onclick="navigateTo('pitch')" style="cursor:pointer;">
       <div class="block-card-header">
-        <div class="block-card-title" style="color:#FFC300">🎯 Pitch Builder</div>
-        <div class="block-card-count" style="color:#FFC300">${pitchDone}/6 Elemente</div>
+        <div class="block-card-title">Pitch Builder</div>
+        <div class="block-card-count">${pitchDone}/6 Elemente</div>
       </div>
       <div class="block-progress-row">
         <div class="block-prog-bar"><div class="block-prog-fill" style="width:${Math.round((pitchDone/6)*100)}%;background:#FFC300"></div></div>
